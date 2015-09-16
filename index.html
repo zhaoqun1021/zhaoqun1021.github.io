@@ -203,7 +203,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/25/mysql-threadpool/">mysql-threadpool</a>
+      <a class="article-title" href="/2015/01/25/mysql-threadpool/">MySQL线程池</a>
     </h1>
   
 
@@ -380,7 +380,7 @@
 <li>减少扫表数量，避免创建临时表，将随机IO变为顺序IO</li>
 </ul>
 <h2 id="B-Tree">B-Tree</h2><h2 id="聚簇索引">聚簇索引</h2><ul>
-<li>聚簇并不是一种单独的索引类型，而是一种存储方式：InnoDB的聚簇索引在同一个结构中保存了B-Tree索引和行数据，索引就是主键</li>
+<li>聚簇并不是一种单独的索引类型，而是一种存储方式：InnoDB的聚簇索引在同一个结构中保存了B-Tree索引和行数据，索引就是主键。而覆盖索引也是相同的模型。</li>
 </ul>
 <h2 id="高性能索引">高性能索引</h2><ul>
 <li><p>三星级索引</p>
@@ -396,6 +396,8 @@
 <li>对于BLOG、TEXT、长varchar，虽然选择性很高，但mysql不允许如此大的字段，只能使用前缀索引</li>
 <li>正常情况下，多列索引应该将选择性高的列放到前面</li>
 </ul>
+</li>
+<li><p>什么情况下无法使用索引</p>
 </li>
 </ul>
 <h2 id="索引使用案例">索引使用案例</h2><h2 id="SQL分析">SQL分析</h2>
