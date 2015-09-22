@@ -5,37 +5,25 @@
   
   <title>划时代的MySQL线程池 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="历史背景
-
-
-
-当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:
+  <meta name="description" content="历史背景当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:
 
 分离数据操作。将许多复杂的数据操作分离到数据层实现（如：实施分库分表后访问路由、数据合并），降低业务层代码复杂度；
-降低MySQL连接数。由于数据层需要的机器数量远小于应用">
+降低MySQL连接数。由于数据层需要的机器数量远小于应用层，所以">
 <meta property="og:type" content="article">
 <meta property="og:title" content="划时代的MySQL线程池">
 <meta property="og:url" content="http://yoursite.com/2015/01/25/mysql-threadpool/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description" content="历史背景
-
-
-
-当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:
+<meta property="og:description" content="历史背景当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:
 
 分离数据操作。将许多复杂的数据操作分离到数据层实现（如：实施分库分表后访问路由、数据合并），降低业务层代码复杂度；
-降低MySQL连接数。由于数据层需要的机器数量远小于应用">
-<meta property="og:updated_time" content="2015-09-22T11:23:12.856Z">
+降低MySQL连接数。由于数据层需要的机器数量远小于应用层，所以">
+<meta property="og:updated_time" content="2015-09-22T11:32:37.741Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="划时代的MySQL线程池">
-<meta name="twitter:description" content="历史背景
-
-
-
-当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:
+<meta name="twitter:description" content="历史背景当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:
 
 分离数据操作。将许多复杂的数据操作分离到数据层实现（如：实施分库分表后访问路由、数据合并），降低业务层代码复杂度；
-降低MySQL连接数。由于数据层需要的机器数量远小于应用">
+降低MySQL连接数。由于数据层需要的机器数量远小于应用层，所以">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -189,19 +177,20 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="历史背景">历史背景</h2><blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:</p>
-<ul>
+        <h2 id="历史背景">历史背景</h2><pre><code>当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、<span class="number">58</span>同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:
+</code></pre><ul>
 <li>分离数据操作。将许多复杂的数据操作分离到数据层实现（如：实施分库分表后访问路由、数据合并），降低业务层代码复杂度；</li>
-<li>降低MySQL连接数。由于数据层需要的机器数量远小于应用层，所以数据库连接数相对较小。尤其是对于业务量庞大，需要分库分表的系统，可能一个表被水平切分到成百上千台机器上，数量更庞大的应用服务器需要与每台MySQL连接，由此导致MySQL服务器的连接数是惊人的。<br>然而为实现数据代理层所付出的代价也是相当可观的，不仅需要增加该层的硬件设施、增加人员维护，由于应用层与数据层之间的传输协议普遍性能不高，与MySQL自己的二进制专用协议相比，无论在序列化性能还是数据包大小都有较大差距，因此应用层需要付出更多的代价去与数据层交互。以上这些缺点对于具有海量业务的公司来说似乎不可容忍，有没有可以解决以上问题的方式呢，答案是肯定的。<br>首先了解一下淘宝的TDDL。</li>
+<li>降低MySQL连接数。由于数据层需要的机器数量远小于应用层，所以数据库连接数相对较小。尤其是对于业务量庞大，需要分库分表的系统，可能一个表被水平切分到成百上千台机器上，数量更庞大的应用服务器需要与每台MySQL连接，由此导致MySQL服务器的连接数是惊人的。<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>然而为实现数据代理层所付出的代价也是相当可观的，不仅需要增加该层的硬件设施、增加人员维护，由于应用层与数据层之间的传输协议普遍性能不高，与MySQL自己的二进制专用协议相比，无论在序列化性能还是数据包大小都有较大差距，因此应用层需要付出更多的代价去与数据层交互。以上这些缺点对于具有海量业务的公司来说似乎不可容忍，有没有可以解决以上问题的方式呢，答案是肯定的。<br>首先了解一下淘宝的TDDL。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</li>
 </ul>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
 <h2 id="TDDL">TDDL</h2><blockquote>
 <blockquote>
 <blockquote>
