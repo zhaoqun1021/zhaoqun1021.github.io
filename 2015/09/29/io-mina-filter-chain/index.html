@@ -27,7 +27,7 @@ EntryImpl
 IoFilter filter;
 EntryImpl prevEntry;
 EntryImpl ne">
-<meta property="og:updated_time" content="2015-10-01T01:56:52.214Z">
+<meta property="og:updated_time" content="2015-10-01T02:08:05.683Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mina之责任链模型实现">
 <meta name="twitter:description" content="数据结构DefaultIoFilterChain
@@ -192,19 +192,19 @@ EntryImpl ne">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="数据结构">数据结构</h2><h3 id="DefaultIoFilterChain">DefaultIoFilterChain</h3><ul>
+        <h2 id="数据结构">数据结构</h2><h4 id="DefaultIoFilterChain">DefaultIoFilterChain</h4><ul>
 <li>EntryImpl head;</li>
 <li>EntryImpl tail;</li>
 </ul>
 <p>Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。</p>
-<h3 id="EntryImpl">EntryImpl</h3><ul>
+<h4 id="EntryImpl">EntryImpl</h4><ul>
 <li>IoFilter filter;</li>
 <li>EntryImpl prevEntry;</li>
 <li>EntryImpl nextEntry;</li>
 <li>NextFilter nextFilter;</li>
 </ul>
 <p>EntryImpl是IoFilter的包装，还提供了前后节点的链接。需要关注的是NextFilter类，由于责任链的两端都可能触发事件，不同事件在链中的传递方向不同，所以IoFilter的实现需要根据不同的事件来判断下一个需要接收事件的Entry是在哪个方向，而Nextfilter正是将这部分逻辑从filter中分离出来，Nextfilter中包含了双向链表中两个方向所有可能发生的事件类型，这样IoFilter只需要根据不同事件调用NextFilter中不同方法即可。</p>
-<h3 id="IoFilter">IoFilter</h3><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
+<h4 id="IoFilter">IoFilter</h4><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
 <h2 id="方向">方向</h2><p>write: tail -&gt; head、previous<br>receive: head -&gt; tail、next</p>
 <h2 id="机制">机制</h2>
       
