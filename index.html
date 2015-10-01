@@ -171,8 +171,8 @@
 </ul>
 <p>EntryImpl是IoFilter的包装，还提供了前后节点的链接。需要关注的是NextFilter类，由于责任链的两端都可能触发事件，不同事件在链中的传递方向不同，所以IoFilter的实现需要根据不同的事件来判断下一个需要接收事件的Entry是在哪个方向，而Nextfilter正是将这部分逻辑从filter中分离出来，Nextfilter中包含了双向链表中两个方向所有可能发生的事件类型，这样IoFilter只需要根据不同事件调用NextFilter中不同方法即可。</p>
 <h3 id="IoFilter">IoFilter</h3><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
-<p>defaultIoFilterChain.fireFilterWrite -&gt; </p>
-
+<h2 id="方向">方向</h2><p>write: tail -&gt; head、previous<br>receive: head -&gt; tail、next</p>
+<h2 id="机制">机制</h2>
       
     </div>
     
