@@ -132,6 +132,202 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-io-mina-filter-chain" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/09/29/io-mina-filter-chain/" class="article-date">
+  	<time datetime="2015-09-29T08:55:42.000Z" itemprop="datePublished">2015-09-29</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/29/io-mina-filter-chain/">Mina之责任链模型实现</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="数据结构">数据结构</h2><h3 id="DefaultIoFilterChain">DefaultIoFilterChain</h3><ul>
+<li>EntryImpl head;</li>
+<li>EntryImpl tail;</li>
+</ul>
+<p>Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。</p>
+<h3 id="EntryImpl">EntryImpl</h3><ul>
+<li>IoFilter filter;</li>
+<li>EntryImpl prevEntry;</li>
+<li>EntryImpl nextEntry;</li>
+<li>NextFilter nextFilter;</li>
+</ul>
+<p>EntryImpl是IoFilter的包装，还提供了前后节点的链接。需要关注的是NextFilter类，由于责任链的两端都可能触发事件，不同事件在链中的传递方向不同，所以IoFilter的实现需要根据不同的事件来判断下一个需要接收事件的Entry是在哪个方向，而Nextfilter正是将这部分逻辑从filter中分离出来，Nextfilter中包含了双向链表中两个方向所有可能发生的事件类型，这样IoFilter只需要根据不同事件调用NextFilter中不同方法即可。</p>
+<h3 id="IoFilter">IoFilter</h3><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
+<p>defaultIoFilterChain.fireFilterWrite -&gt; </p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-java-class-load" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/09/27/java-class-load/" class="article-date">
+  	<time datetime="2015-09-27T09:12:15.000Z" itemprop="datePublished">2015-09-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/27/java-class-load/">java-class-load</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="JVM默认的三种加载器">JVM默认的三种加载器</h2><h4 id="根加载器">根加载器</h4><ul>
+<li>加载lang包核心类、rt.jar</li>
+</ul>
+<h4 id="扩展加载器">扩展加载器</h4><ul>
+<li>加载JDK的lib目录及ext目录jar包</li>
+</ul>
+<h4 id="系统加载器">系统加载器</h4><ul>
+<li>加载classpath下jar包</li>
+</ul>
+<h2 id="机制">机制</h2><p>除根加载器外，每个类加载器都有父加载器，当加载某个类时首先让父加载器（加载器链路）们尝试加载，如果父加载器们加载失败，则捕获异常并调用自己的findClass方法尝试加载。</p>
+<p>依赖顺序：自定义加载器-&gt;系统加载器-&gt;扩展加载器-&gt;根加载器。</p>
+<p>用户自定义加载器需要继承抽象类ClassLoad，创建自定义加载器时可以指定父加载器，默认的父加载器为系统加载器，如果指定为空则父加载器为根加载器。</p>
+<p>JVM运行过程中遇到了需要加载的类，由当前类的定义类加载器（加载当前类的加载器）来加载。</p>
+<h2 id="命名空间">命名空间</h2><p>每个加载器都有自己的命名空间，命名空间由该加载器和所有父加载器加载的类构成的，可以理解为同一个类加载系统。同一个命名空间中，只存在一个名称及包名相同的Class实例，同一个命名空间内才允许类之间相互访问。</p>
+<p>JVM之所以使用父委托机制来实现类加载，主要出于安全考虑，在同一个加载器系统中不存在同一个类名、包名相同的类，一个同样类名、包名的类不会加载第二次，因此体系中已经被加载的系统类不会被恶意代码篡改。</p>
+<h2 id="运行时包">运行时包</h2><p>定义：相同包名且由同一加载器加载的一部分类。</p>
+<p>如果有在同一加载器系统中包名相同但由不同类加载器加载的类，他们不在同一个运行时包，所以理论上不具有相同包的权限。</p>
+<p>运行时包的存在同样是出于安全考虑。</p>
+<h2 id="自定义加载器">自定义加载器</h2><p>如何实现自定义加载器？</p>
+<p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-io-epoll-model" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/09/23/io-epoll-model/" class="article-date">
+  	<time datetime="2015-09-23T03:25:16.000Z" itemprop="datePublished">2015-09-23</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/23/io-epoll-model/">epoll模型</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
     <article id="post-mysql-install" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -182,60 +378,6 @@
 
 
   
-    <article id="post-cc" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/09/14/cc/" class="article-date">
-  	<time datetime="2015-09-14T14:41:58.000Z" itemprop="datePublished">2015-09-14</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/14/cc/">cc</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="我们的爱情_像路过的风景">我们的爱情 像路过的风景</h3><h3 id="Love">Love</h3>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
     <article id="post-mysql-threadpool" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -265,7 +407,7 @@
         <h2 id="历史背景">历史背景</h2><p>当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:</p>
 <ul>
 <li>分离数据操作。将许多复杂的数据操作分离到数据层实现（如：实施分库分表后访问路由、数据合并），降低业务层代码复杂度；</li>
-<li>降低MySQL连接数。由于数据层需要的机器数量远小于应用层，所以数据库连接数相对较小。尤其是对于业务量庞大，需要分库分表的系统，可能一个表被水平切分到成百上千台机器上，数量更庞大的应用服务器需要与每台MySQL连接，由此导致MySQL服务器的连接数是惊人的。</li>
+<li>降低MySQL连接数。由于数据层需要的机器数量远小于业务层，所以数据库连接数相对较小。尤其是对于业务量庞大，需要分库分表的系统，可能一个表被水平切分到成百上千台机器上，数量更庞大的应用服务器需要与每台MySQL连接，由此导致MySQL服务器的连接数是惊人的。</li>
 </ul>
 <p>然而为实现数据代理层所付出的代价也是相当可观的，不仅需要增加该层的硬件设施、增加人员维护，由于应用层与数据层之间的传输协议普遍性能不高，与MySQL自己的二进制专用协议相比，无论在序列化性能还是数据包大小都有较大差距，因此应用层需要付出更多的代价去与数据层交互。以上这些缺点对于具有海量业务的公司来说似乎不可容忍，有没有可以解决以上问题的方式呢，答案是肯定的。<br>首先了解一下淘宝的TDDL。</p>
 <h2 id="TDDL">TDDL</h2><p>TDDL是淘宝应用于分库分表的项目，经过多个版本的发展，整合阿里另一个项目”CORBA”之后愈发强大。TDDL主要提供分库分表场景下动态访问路由、数据合并、流控等功能。因为TDDL在代码层面被项目依赖，依托”CORBA”强大的SQL解析能力，领域模型定位于数据库与JDBC之间，所以对业务代码无侵入，基本上实现了上文中数据层的第一个任务。</p>
@@ -273,7 +415,17 @@
 <h2 id="MySQL线程池">MySQL线程池</h2><p>数据库线程池并不是MySQL的独门绝技，在5.5时代MariaDB和PerconaDB就已经实现了线程池功能，MySQL在随后的5.6社区版本当中也加入了该功能。</p>
 <p>在MySQL5.6之前，线程模型比较简单，类似于Java的BIO模型，每个线程处理只能处理一个连接，每次MySQL请求的数据IO、业务响应都在同一个线程当中。如果集群庞大的分库分表场景下，MySQL将会产生大量的TCP连接，系统会耗费大量的时间用来做线程上下文切换、缓存换入换出以及资源竞争，如果并发量陡增（比如秒杀），MySQL将直接无响应。</p>
 <p>MySQL通过线程池所实现的线程模型与当今主流IO系统的线程模型基本一致（如Mina、Netty、Tomcat、Nginx等），简要来说就是一部分线程负责网络数据包的IO（IO线程：负责在核心态内存与用户态内存间交换数据），它们每次接受SQL请求并将任务加入队列之后立即返回，另一部分线程负责响应请求（业务线程），不断从队列获取任务并执行。IO线程使用非阻塞模型（epoll），可以创建海量连接且保持性能稳定，由于与业务线程独立，当业务线程繁忙时不会影响IO响应。两部分线程之间有队列负责缓冲任务，保护数据库引擎不会在短时间内涌入太多任务，保证正常运行。</p>
-<h2 id="线程池相关参数">线程池相关参数</h2><h2 id="线程池实现">线程池实现</h2><p><img src="http://jbcdn2.b0.upaiyun.com/2015/07/28c8edde3d61a0411511d3b1866f0636.png" alt="线程池实现"></p>
+<h2 id="线程池相关参数">线程池相关参数</h2><ul>
+<li>thread_handling:表示线程池模型。</li>
+<li>thread_pool_size:表示线程池的group个数，一般设置为当前CPU核心数目。理想情况下，一个group一个活跃的工作线程，达到充分利用CPU的目的。</li>
+<li>thread_pool_stall_limit:用于timer线程定期检查group是否“停滞”，参数表示检测的间隔。</li>
+<li>thread_pool_idle_timeout:当一个worker空闲一段时间后会自动退出，保证线程池中的工作线程在满足请求的情况下，保持比较低的水平。</li>
+<li>thread_pool_oversubscribe:该参数用于控制CPU核心上“超频”的线程数。这个参数设置值不含listen线程计数。</li>
+<li>threadpool_high_prio_mode:表示优先队列的模式。</li>
+</ul>
+<h2 id="线程池实现">线程池实现</h2><p><img src="http://jbcdn2.b0.upaiyun.com/2015/07/28c8edde3d61a0411511d3b1866f0636.png" alt="线程池实现"><br>每一个绿色的方框代表一个group，group的数量由thread_pool_size参数决定。</p>
+<p>每个group包含一个普通队列和一个优先队列，包含一个listen线程和若干worker线程，两种线程间可以动态转换，worker线程数量由工作负载决定，同时也受thread_pool_oversubscribe参数影响。普通队列中的任务超过一定时间未被执行会被列入优先队列，而优先队列的任务会被优先执行。</p>
+<p>整个group组有一个timer监控线程。</p>
 
       
     </div>
@@ -328,7 +480,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="摘要">摘要</h2><p>与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。</p>
+
       
     </div>
     
@@ -356,10 +509,10 @@
 
 
   
-    <article id="post-21st-tcp" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-io-21st-tcp" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/01/19/21st-tcp/" class="article-date">
+      <a href="/2015/01/19/io-21st-tcp/" class="article-date">
   	<time datetime="2015-01-19T06:09:48.000Z" itemprop="datePublished">2015-01-19</time>
 </a>
     </div>
@@ -373,7 +526,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/19/21st-tcp/">21世纪的TCP</a>
+      <a class="article-title" href="/2015/01/19/io-21st-tcp/">21世纪的TCP</a>
     </h1>
   
 
@@ -490,10 +643,10 @@
 
 
   
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-cc-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/01/14/hello-world/" class="article-date">
+      <a href="/2015/01/14/cc-hello-world/" class="article-date">
   	<time datetime="2015-01-14T14:41:58.000Z" itemprop="datePublished">2015-01-14</time>
 </a>
     </div>
@@ -507,7 +660,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/14/hello-world/">你好，色彩</a>
+      <a class="article-title" href="/2015/01/14/cc-hello-world/">你好，色彩</a>
     </h1>
   
 
@@ -516,7 +669,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="安装Node-js、Git">安装Node.js、Git</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Node.js</span><br><span class="line">&amp;</span><br><span class="line">Git</span><br></pre></td></tr></table></figure>
+        <h2 id="Hello_World">Hello World</h2><p>新博客：GitHub + Hexo</p>
+<h2 id="安装Node-js、Git">安装Node.js、Git</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Node.js</span><br><span class="line">&amp;</span><br><span class="line">Git</span><br></pre></td></tr></table></figure>
 <h2 id="配置GtiHub">配置GtiHub</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">生成密钥：ssh-keygen -t rsa -C <span class="string">"911@zhaoqun911.cn"</span></span><br><span class="line"></span><br><span class="line">将公钥配置到GitHub： Account Settings—-&gt;SSH Public keys —-&gt; add another public keys（C:\Users\xx\.ssh\id_rsa.pub）</span><br><span class="line"></span><br><span class="line">测试：ssh -T git@github.com</span><br><span class="line"></span><br><span class="line">设置用户信息：git config --global user.name <span class="string">"xx"</span>； git config --global user.email  <span class="string">"xx"</span></span><br></pre></td></tr></table></figure>
 <h2 id="安装、配置hexo">安装、配置hexo</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line"></span><br><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> theme</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:litten/hexo-theme-yilia yilia</span><br><span class="line"></span><br><span class="line">修改配置文件:theme:yilia</span><br><span class="line"></span><br><span class="line">hexo g</span><br><span class="line"></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
 <h2 id="发布">发布</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> public</span><br><span class="line"></span><br><span class="line">git init</span><br><span class="line"></span><br><span class="line">git remote blog add git@git.com:zhaoqun1021/zhaoqun1021.github.io</span><br><span class="line"></span><br><span class="line">将所有文件备份</span><br><span class="line"></span><br><span class="line">git pull blog master</span><br><span class="line"></span><br><span class="line">将备份的文件再覆盖回来</span><br><span class="line"></span><br><span class="line">git add *</span><br><span class="line"></span><br><span class="line">git commit -m <span class="string">'cc'</span></span><br><span class="line"></span><br><span class="line">git push blog master</span><br></pre></td></tr></table></figure>

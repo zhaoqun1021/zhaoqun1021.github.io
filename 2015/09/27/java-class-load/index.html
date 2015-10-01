@@ -3,18 +3,48 @@
 <head>
   <meta charset="utf-8">
   
-  <title>MySQL性能优化 | Zhao Qun&#39;s blog</title>
+  <title>java-class-load | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="摘要与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。">
+  <meta name="description" content="JVM默认的三种加载器根加载器
+加载lang包核心类、rt.jar
+
+扩展加载器
+加载JDK的lib目录及ext目录jar包
+
+系统加载器
+加载classpath下jar包
+
+机制除根加载器外，每个类加载器都有父加载器，当加载某个类时首先让父加载器（加载器链路）们尝试加载，如果父加载器们加载失败，则捕获异常并调用自己的findClass方法尝试加载。
+依赖顺序：自定义加载器-&amp;gt;系统加载器-&amp;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL性能优化">
-<meta property="og:url" content="http://yoursite.com/2015/01/20/mysql-performance/index.html">
+<meta property="og:title" content="java-class-load">
+<meta property="og:url" content="http://yoursite.com/2015/09/27/java-class-load/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description" content="摘要与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。">
-<meta property="og:updated_time" content="2015-09-29T15:19:14.094Z">
+<meta property="og:description" content="JVM默认的三种加载器根加载器
+加载lang包核心类、rt.jar
+
+扩展加载器
+加载JDK的lib目录及ext目录jar包
+
+系统加载器
+加载classpath下jar包
+
+机制除根加载器外，每个类加载器都有父加载器，当加载某个类时首先让父加载器（加载器链路）们尝试加载，如果父加载器们加载失败，则捕获异常并调用自己的findClass方法尝试加载。
+依赖顺序：自定义加载器-&amp;gt;系统加载器-&amp;">
+<meta property="og:updated_time" content="2015-09-29T07:22:56.356Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL性能优化">
-<meta name="twitter:description" content="摘要与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。">
+<meta name="twitter:title" content="java-class-load">
+<meta name="twitter:description" content="JVM默认的三种加载器根加载器
+加载lang包核心类、rt.jar
+
+扩展加载器
+加载JDK的lib目录及ext目录jar包
+
+系统加载器
+加载classpath下jar包
+
+机制除根加载器外，每个类加载器都有父加载器，当加载某个类时首先让父加载器（加载器链路）们尝试加载，如果父加载器们加载失败，则捕获异常并调用自己的findClass方法尝试加载。
+依赖顺序：自定义加载器-&amp;gt;系统加载器-&amp;">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -131,11 +161,11 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-mysql-performance" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-java-class-load" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/01/20/mysql-performance/" class="article-date">
-  	<time datetime="2015-01-20T07:41:16.000Z" itemprop="datePublished">2015-01-20</time>
+      <a href="/2015/09/27/java-class-load/" class="article-date">
+  	<time datetime="2015-09-27T09:12:15.000Z" itemprop="datePublished">2015-09-27</time>
 </a>
     </div>
   
@@ -148,7 +178,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      MySQL性能优化
+      java-class-load
     </h1>
   
 
@@ -158,7 +188,7 @@
         
         
 	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/mysql/">mysql</a>
+	<a class="article-category-link" href="/java/">java</a>
 	</div>
 
 
@@ -168,7 +198,26 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="摘要">摘要</h2><p>与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。</p>
+        <h2 id="JVM默认的三种加载器">JVM默认的三种加载器</h2><h4 id="根加载器">根加载器</h4><ul>
+<li>加载lang包核心类、rt.jar</li>
+</ul>
+<h4 id="扩展加载器">扩展加载器</h4><ul>
+<li>加载JDK的lib目录及ext目录jar包</li>
+</ul>
+<h4 id="系统加载器">系统加载器</h4><ul>
+<li>加载classpath下jar包</li>
+</ul>
+<h2 id="机制">机制</h2><p>除根加载器外，每个类加载器都有父加载器，当加载某个类时首先让父加载器（加载器链路）们尝试加载，如果父加载器们加载失败，则捕获异常并调用自己的findClass方法尝试加载。</p>
+<p>依赖顺序：自定义加载器-&gt;系统加载器-&gt;扩展加载器-&gt;根加载器。</p>
+<p>用户自定义加载器需要继承抽象类ClassLoad，创建自定义加载器时可以指定父加载器，默认的父加载器为系统加载器，如果指定为空则父加载器为根加载器。</p>
+<p>JVM运行过程中遇到了需要加载的类，由当前类的定义类加载器（加载当前类的加载器）来加载。</p>
+<h2 id="命名空间">命名空间</h2><p>每个加载器都有自己的命名空间，命名空间由该加载器和所有父加载器加载的类构成的，可以理解为同一个类加载系统。同一个命名空间中，只存在一个名称及包名相同的Class实例，同一个命名空间内才允许类之间相互访问。</p>
+<p>JVM之所以使用父委托机制来实现类加载，主要出于安全考虑，在同一个加载器系统中不存在同一个类名、包名相同的类，一个同样类名、包名的类不会加载第二次，因此体系中已经被加载的系统类不会被恶意代码篡改。</p>
+<h2 id="运行时包">运行时包</h2><p>定义：相同包名且由同一加载器加载的一部分类。</p>
+<p>如果有在同一加载器系统中包名相同但由不同类加载器加载的类，他们不在同一个运行时包，所以理论上不具有相同包的权限。</p>
+<p>运行时包的存在同样是出于安全考虑。</p>
+<h2 id="自定义加载器">自定义加载器</h2><p>如何实现自定义加载器？</p>
+<p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
 
       
     </div>
@@ -178,18 +227,18 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/01/25/mysql-threadpool/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/09/29/io-mina-filter-chain/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          划时代的MySQL线程池
+          Mina之责任链模型实现
         
       </div>
     </a>
   
   
-    <a href="/2015/01/19/io-21st-tcp/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">21世纪的TCP</div>
+    <a href="/2015/09/23/io-epoll-model/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">epoll模型</div>
       <strong class="article-nav-caption">></strong>
     </a>
   

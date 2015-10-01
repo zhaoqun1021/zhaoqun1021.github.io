@@ -3,18 +3,42 @@
 <head>
   <meta charset="utf-8">
   
-  <title>MySQL性能优化 | Zhao Qun&#39;s blog</title>
+  <title>Mina之责任链模型实现 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="摘要与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。">
+  <meta name="description" content="数据结构DefaultIoFilterChain
+EntryImpl head;
+EntryImpl tail;
+
+Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。
+EntryImpl
+IoFilter filter;
+EntryImpl prevEntry;
+EntryImpl ne">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL性能优化">
-<meta property="og:url" content="http://yoursite.com/2015/01/20/mysql-performance/index.html">
+<meta property="og:title" content="Mina之责任链模型实现">
+<meta property="og:url" content="http://yoursite.com/2015/09/29/io-mina-filter-chain/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description" content="摘要与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。">
-<meta property="og:updated_time" content="2015-09-29T15:19:14.094Z">
+<meta property="og:description" content="数据结构DefaultIoFilterChain
+EntryImpl head;
+EntryImpl tail;
+
+Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。
+EntryImpl
+IoFilter filter;
+EntryImpl prevEntry;
+EntryImpl ne">
+<meta property="og:updated_time" content="2015-09-29T16:25:31.454Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL性能优化">
-<meta name="twitter:description" content="摘要与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。">
+<meta name="twitter:title" content="Mina之责任链模型实现">
+<meta name="twitter:description" content="数据结构DefaultIoFilterChain
+EntryImpl head;
+EntryImpl tail;
+
+Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。
+EntryImpl
+IoFilter filter;
+EntryImpl prevEntry;
+EntryImpl ne">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -131,11 +155,11 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-mysql-performance" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-io-mina-filter-chain" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/01/20/mysql-performance/" class="article-date">
-  	<time datetime="2015-01-20T07:41:16.000Z" itemprop="datePublished">2015-01-20</time>
+      <a href="/2015/09/29/io-mina-filter-chain/" class="article-date">
+  	<time datetime="2015-09-29T08:55:42.000Z" itemprop="datePublished">2015-09-29</time>
 </a>
     </div>
   
@@ -148,7 +172,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      MySQL性能优化
+      Mina之责任链模型实现
     </h1>
   
 
@@ -158,7 +182,7 @@
         
         
 	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/mysql/">mysql</a>
+	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
@@ -168,7 +192,20 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="摘要">摘要</h2><p>与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。</p>
+        <h2 id="数据结构">数据结构</h2><h3 id="DefaultIoFilterChain">DefaultIoFilterChain</h3><ul>
+<li>EntryImpl head;</li>
+<li>EntryImpl tail;</li>
+</ul>
+<p>Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。</p>
+<h3 id="EntryImpl">EntryImpl</h3><ul>
+<li>IoFilter filter;</li>
+<li>EntryImpl prevEntry;</li>
+<li>EntryImpl nextEntry;</li>
+<li>NextFilter nextFilter;</li>
+</ul>
+<p>EntryImpl是IoFilter的包装，还提供了前后节点的链接。需要关注的是NextFilter类，由于责任链的两端都可能触发事件，不同事件在链中的传递方向不同，所以IoFilter的实现需要根据不同的事件来判断下一个需要接收事件的Entry是在哪个方向，而Nextfilter正是将这部分逻辑从filter中分离出来，Nextfilter中包含了双向链表中两个方向所有可能发生的事件类型，这样IoFilter只需要根据不同事件调用NextFilter中不同方法即可。</p>
+<h3 id="IoFilter">IoFilter</h3><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
+<p>defaultIoFilterChain.fireFilterWrite -&gt; </p>
 
       
     </div>
@@ -178,18 +215,9 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/01/25/mysql-threadpool/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          划时代的MySQL线程池
-        
-      </div>
-    </a>
   
-  
-    <a href="/2015/01/19/io-21st-tcp/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">21世纪的TCP</div>
+    <a href="/2015/09/27/java-class-load/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java-class-load</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
