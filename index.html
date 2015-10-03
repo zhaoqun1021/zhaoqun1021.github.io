@@ -149,7 +149,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/10/02/io-mina-write-async/">Mina写异步的实现</a>
+      <a class="article-title" href="/2015/10/02/io-mina-write-async/">Mina-写异步实现</a>
     </h1>
   
 
@@ -204,7 +204,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/10/02/io-mina-io-thread-model/">MinaIO线程模型</a>
+      <a class="article-title" href="/2015/10/02/io-mina-io-thread-model/">Mina-IO线程模型</a>
     </h1>
   
 
@@ -213,7 +213,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="数据结构">数据结构</h2><h3 id="Accept事件处理">Accept事件处理</h3><ul>
+        <h2 id="Accept事件处理">Accept事件处理</h2><ul>
 <li>继承关系：NioSocketAcceptor -&gt; AbstractPollingIoAcceptor -&gt; AbstractIoAcceptor -&gt; AbstractIoService</li>
 </ul>
 <h4 id="NioSocketAcceptor">NioSocketAcceptor</h4><ul>
@@ -232,7 +232,7 @@
 </li>
 <li>Accept.run():调用open()、select(),将select()返回的SelectionKey通过accept(IoProcessor)初始化为NioSocketSession,随后初始化session，并将session绑定到processor(最终绑定processor的逻辑在SimpleIoProcessorPool.add(),该方法调用NioProcessor数组中某个NioProcessor的add方法将session与其绑定，第一次调用NioProcessor.add时将启动processor线程)</li>
 </ul>
-<h3 id="Read/Write事件处理">Read/Write事件处理</h3><ul>
+<h2 id="Read/Write事件处理">Read/Write事件处理</h2><ul>
 <li>继承关系：NioProcessor -&gt; AbstractPollingIoProcessor</li>
 </ul>
 <h4 id="SimpleIoProcessorPool">SimpleIoProcessorPool</h4><ul>
