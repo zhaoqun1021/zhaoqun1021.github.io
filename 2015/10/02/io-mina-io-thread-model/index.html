@@ -3,18 +3,42 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Epoll模型 | Zhao Qun&#39;s blog</title>
+  <title>MinaIO线程模型 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
+  <meta name="description" content="数据结构Accept事件处理
+继承关系：NioSocketAcceptor -&amp;gt; AbstractPollingIoAcceptor -&amp;gt; AbstractIoAcceptor -&amp;gt; AbstractIoService
+
+NioSocketAcceptor
+selector
+
+init():初始化NIO.selector
+
+open():将Accept事件注册到selector">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Epoll模型">
-<meta property="og:url" content="http://yoursite.com/2015/09/23/io-epoll-model/index.html">
+<meta property="og:title" content="MinaIO线程模型">
+<meta property="og:url" content="http://yoursite.com/2015/10/02/io-mina-io-thread-model/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description">
-<meta property="og:updated_time" content="2015-10-01T03:20:13.608Z">
+<meta property="og:description" content="数据结构Accept事件处理
+继承关系：NioSocketAcceptor -&amp;gt; AbstractPollingIoAcceptor -&amp;gt; AbstractIoAcceptor -&amp;gt; AbstractIoService
+
+NioSocketAcceptor
+selector
+
+init():初始化NIO.selector
+
+open():将Accept事件注册到selector">
+<meta property="og:updated_time" content="2015-10-02T14:50:21.577Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Epoll模型">
-<meta name="twitter:description">
+<meta name="twitter:title" content="MinaIO线程模型">
+<meta name="twitter:description" content="数据结构Accept事件处理
+继承关系：NioSocketAcceptor -&amp;gt; AbstractPollingIoAcceptor -&amp;gt; AbstractIoAcceptor -&amp;gt; AbstractIoService
+
+NioSocketAcceptor
+selector
+
+init():初始化NIO.selector
+
+open():将Accept事件注册到selector">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -131,11 +155,11 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-io-epoll-model" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-io-mina-io-thread-model" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/09/23/io-epoll-model/" class="article-date">
-  	<time datetime="2015-09-23T03:25:16.000Z" itemprop="datePublished">2015-09-23</time>
+      <a href="/2015/10/02/io-mina-io-thread-model/" class="article-date">
+  	<time datetime="2015-10-02T08:56:02.000Z" itemprop="datePublished">2015-10-02</time>
 </a>
     </div>
   
@@ -148,7 +172,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Epoll模型
+      MinaIO线程模型
     </h1>
   
 
@@ -168,7 +192,54 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="数据结构">数据结构</h2><h3 id="Accept事件处理">Accept事件处理</h3><ul>
+<li>继承关系：NioSocketAcceptor -&gt; AbstractPollingIoAcceptor -&gt; AbstractIoAcceptor -&gt; AbstractIoService</li>
+</ul>
+<h4 id="NioSocketAcceptor">NioSocketAcceptor</h4><ul>
+<li><p>selector</p>
+</li>
+<li><p>init():初始化NIO.selector</p>
+</li>
+<li>open():将Accept事件注册到selector</li>
+<li>select():执行NIO.selector.select()</li>
+</ul>
+<h4 id="AbstractPollingIoAcceptor">AbstractPollingIoAcceptor</h4><ul>
+<li>Acceptor -&gt; Runnable:run()</li>
+<li><p>SimpleIoProcessorPool -&gt; IoProcessor</p>
+</li>
+<li><p>bindInternal()：调用startupAcceptor(),执行Accept.run()；</p>
+</li>
+<li>Accept.run():调用open()、select(),将select()返回的SelectionKey通过accept(IoProcessor)初始化为NioSocketSession,随后初始化session，并将session绑定到processor(最终绑定processor的逻辑在SimpleIoProcessorPool.add(),该方法调用NioProcessor数组中某个NioProcessor的add方法将session与其绑定，第一次调用NioProcessor.add时将启动processor线程)</li>
+</ul>
+<h3 id="Read/Write事件处理">Read/Write事件处理</h3><ul>
+<li>继承关系：NioProcessor -&gt; AbstractPollingIoProcessor</li>
+</ul>
+<h4 id="SimpleIoProcessorPool">SimpleIoProcessorPool</h4><ul>
+<li>NioProcessor[]：Processor数组，默认大小为CPU核心数量+1；</li>
+</ul>
+<h4 id="NioProcessor">NioProcessor</h4><ul>
+<li><p>selector</p>
+</li>
+<li><p>init()；打开selector；</p>
+</li>
+<li>select():调用selector的select();</li>
+<li>selectedSessions():返回selector.selectedKeys()方法；</li>
+<li>registerNewSelector():处理当程序掉入nio坑里时，将老selector中所有keys注册到新selector上面；</li>
+</ul>
+<h4 id="AbstractPollingIoProcessor">AbstractPollingIoProcessor</h4><ul>
+<li><p>Processor -&gt; Runnable</p>
+</li>
+<li><p>add():将新session加入到Queue，随后检查如果第一次被调用的话则启动startupProcessor()方法执行Processor.run()；</p>
+</li>
+<li>Processor.run():执行select()，判断是否掉到nio坑里，随后处理newSession，初始化newSession并绑定Read/Write事件到selector;然后调用process开始处理活跃的session，再调用flush()，将需要发送的数据交给TCP</li>
+<li>process():遍历活跃的session集合调用process(session)处理每个session；</li>
+<li>process(session)：判断如果是可读状态的session则调用read(),如果可写状态则将session加入flushingSessions队列;</li>
+<li>read():将数据读取后调用IoFilterChain.fireMessageReceived方法，此时数据将通过Mina的filters处理数据，最终交给handler处理。</li>
+<li>flush():遍历flushingSession取出session，调用flushNow(session)，如果还有未发送的数据则需要调用scheduleFlush(session)，“//Kernel buffer is full.”;</li>
+<li>flushNow(session):取出session中的writeRequestQueue，发送队列里面的数据；</li>
+<li>scheduleFlush(session)：将session重新加入到flushingSession中；</li>
+</ul>
+
       
     </div>
     
@@ -177,18 +248,18 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/09/27/java-class-load/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/10/02/io-mina-write-async/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          java-class-load
+          Mina写异步的实现
         
       </div>
     </a>
   
   
-    <a href="/2015/09/19/mysql-install/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">mysql-install</div>
+    <a href="/2015/10/01/java-concurrent-aqs/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">java-concurrent-aqs</div>
       <strong class="article-nav-caption">></strong>
     </a>
   

@@ -132,6 +132,216 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-io-mina-write-async" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/02/io-mina-write-async/" class="article-date">
+  	<time datetime="2015-10-02T14:45:10.000Z" itemprop="datePublished">2015-10-02</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/02/io-mina-write-async/">Mina写异步的实现</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="摘要">摘要</h2><p>异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。</p>
+<h2 id="发送数据时的代码流程">发送数据时的代码流程</h2><h2 id="关键点">关键点</h2>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-io-mina-io-thread-model" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/02/io-mina-io-thread-model/" class="article-date">
+  	<time datetime="2015-10-02T08:56:02.000Z" itemprop="datePublished">2015-10-02</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/02/io-mina-io-thread-model/">MinaIO线程模型</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="数据结构">数据结构</h2><h3 id="Accept事件处理">Accept事件处理</h3><ul>
+<li>继承关系：NioSocketAcceptor -&gt; AbstractPollingIoAcceptor -&gt; AbstractIoAcceptor -&gt; AbstractIoService</li>
+</ul>
+<h4 id="NioSocketAcceptor">NioSocketAcceptor</h4><ul>
+<li><p>selector</p>
+</li>
+<li><p>init():初始化NIO.selector</p>
+</li>
+<li>open():将Accept事件注册到selector</li>
+<li>select():执行NIO.selector.select()</li>
+</ul>
+<h4 id="AbstractPollingIoAcceptor">AbstractPollingIoAcceptor</h4><ul>
+<li>Acceptor -&gt; Runnable:run()</li>
+<li><p>SimpleIoProcessorPool -&gt; IoProcessor</p>
+</li>
+<li><p>bindInternal()：调用startupAcceptor(),执行Accept.run()；</p>
+</li>
+<li>Accept.run():调用open()、select(),将select()返回的SelectionKey通过accept(IoProcessor)初始化为NioSocketSession,随后初始化session，并将session绑定到processor(最终绑定processor的逻辑在SimpleIoProcessorPool.add(),该方法调用NioProcessor数组中某个NioProcessor的add方法将session与其绑定，第一次调用NioProcessor.add时将启动processor线程)</li>
+</ul>
+<h3 id="Read/Write事件处理">Read/Write事件处理</h3><ul>
+<li>继承关系：NioProcessor -&gt; AbstractPollingIoProcessor</li>
+</ul>
+<h4 id="SimpleIoProcessorPool">SimpleIoProcessorPool</h4><ul>
+<li>NioProcessor[]：Processor数组，默认大小为CPU核心数量+1；</li>
+</ul>
+<h4 id="NioProcessor">NioProcessor</h4><ul>
+<li><p>selector</p>
+</li>
+<li><p>init()；打开selector；</p>
+</li>
+<li>select():调用selector的select();</li>
+<li>selectedSessions():返回selector.selectedKeys()方法；</li>
+<li>registerNewSelector():处理当程序掉入nio坑里时，将老selector中所有keys注册到新selector上面；</li>
+</ul>
+<h4 id="AbstractPollingIoProcessor">AbstractPollingIoProcessor</h4><ul>
+<li><p>Processor -&gt; Runnable</p>
+</li>
+<li><p>add():将新session加入到Queue，随后检查如果第一次被调用的话则启动startupProcessor()方法执行Processor.run()；</p>
+</li>
+<li>Processor.run():执行select()，判断是否掉到nio坑里，随后处理newSession，初始化newSession并绑定Read/Write事件到selector;然后调用process开始处理活跃的session，再调用flush()，将需要发送的数据交给TCP</li>
+<li>process():遍历活跃的session集合调用process(session)处理每个session；</li>
+<li>process(session)：判断如果是可读状态的session则调用read(),如果可写状态则将session加入flushingSessions队列;</li>
+<li>read():将数据读取后调用IoFilterChain.fireMessageReceived方法，此时数据将通过Mina的filters处理数据，最终交给handler处理。</li>
+<li>flush():遍历flushingSession取出session，调用flushNow(session)，如果还有未发送的数据则需要调用scheduleFlush(session)，“//Kernel buffer is full.”;</li>
+<li>flushNow(session):取出session中的writeRequestQueue，发送队列里面的数据；</li>
+<li>scheduleFlush(session)：将session重新加入到flushingSession中；</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-java-concurrent-aqs" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/01/java-concurrent-aqs/" class="article-date">
+  	<time datetime="2015-10-01T03:02:59.000Z" itemprop="datePublished">2015-10-01</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/01/java-concurrent-aqs/">java-concurrent-aqs</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="摘要">摘要</h2>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/Java并发——AQS/">Java并发——AQS</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
     <article id="post-io-mina-filter-chain" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -149,7 +359,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/29/io-mina-filter-chain/">Mina之责任链模型实现</a>
+      <a class="article-title" href="/2015/09/29/io-mina-filter-chain/">Mina之责任链模式实现</a>
     </h1>
   
 
@@ -294,7 +504,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/23/io-epoll-model/">epoll模型</a>
+      <a class="article-title" href="/2015/09/23/io-epoll-model/">Epoll模型</a>
     </h1>
   
 
@@ -538,7 +748,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="关于TCP">关于TCP</h2><p>如果需要详尽地描述当前TCP的最新实现可能几本书都不够，经过几十年的发展，TCP的历史</p>
+
       
     </div>
     
@@ -566,145 +777,10 @@
 
 
   
-    <article id="post-mysql-index" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a href="/2015/01/17/mysql-index/" class="article-date">
-  	<time datetime="2015-01-17T14:32:26.000Z" itemprop="datePublished">2015-01-17</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/17/mysql-index/">MYSQL索引</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="为什么需要索引">为什么需要索引</h2><ul>
-<li>索引的顺序性</li>
-<li>快速查找、排序、分组</li>
-<li>减少扫表数量，避免创建临时表，将随机IO变为顺序IO</li>
-</ul>
-<h2 id="B-Tree">B-Tree</h2><h2 id="聚簇索引">聚簇索引</h2><ul>
-<li>聚簇并不是一种单独的索引类型，而是一种存储方式：InnoDB的聚簇索引在同一个结构中保存了B-Tree索引和行数据，索引就是主键。而覆盖索引也是相同的模型。</li>
-</ul>
-<h2 id="高性能索引">高性能索引</h2><ul>
-<li><p>三星级索引</p>
-<ul>
-<li>一星：要查找的记录放在一起</li>
-<li>二星：多列索引的顺序与查找条件顺序一致</li>
-<li>三星：覆盖索引</li>
-</ul>
-</li>
-<li><p>选择性</p>
-<ul>
-<li>定义：不重复的列数量与所有列数量的比值，最大值为1</li>
-<li>对于BLOG、TEXT、长varchar，虽然选择性很高，但mysql不允许如此大的字段，只能使用前缀索引</li>
-<li>正常情况下，多列索引应该将选择性高的列放到前面</li>
-</ul>
-</li>
-<li><p>什么情况下无法使用索引</p>
-</li>
-</ul>
-<h2 id="索引使用案例">索引使用案例</h2><h2 id="SQL分析">SQL分析</h2>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/mysql/">mysql</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-cc-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/14/cc-hello-world/" class="article-date">
-  	<time datetime="2015-01-14T14:41:58.000Z" itemprop="datePublished">2015-01-14</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/14/cc-hello-world/">你好，色彩</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Hello_World">Hello World</h2><p>新博客：GitHub + Hexo</p>
-<h2 id="安装Node-js、Git">安装Node.js、Git</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Node.js</span><br><span class="line">&amp;</span><br><span class="line">Git</span><br></pre></td></tr></table></figure>
-<h2 id="配置GtiHub">配置GtiHub</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">生成密钥：ssh-keygen -t rsa -C <span class="string">"911@zhaoqun911.cn"</span></span><br><span class="line"></span><br><span class="line">将公钥配置到GitHub： Account Settings—-&gt;SSH Public keys —-&gt; add another public keys（C:\Users\xx\.ssh\id_rsa.pub）</span><br><span class="line"></span><br><span class="line">测试：ssh -T git@github.com</span><br><span class="line"></span><br><span class="line">设置用户信息：git config --global user.name <span class="string">"xx"</span>； git config --global user.email  <span class="string">"xx"</span></span><br></pre></td></tr></table></figure>
-<h2 id="安装、配置hexo">安装、配置hexo</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line"></span><br><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> theme</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:litten/hexo-theme-yilia yilia</span><br><span class="line"></span><br><span class="line">修改配置文件:theme:yilia</span><br><span class="line"></span><br><span class="line">hexo g</span><br><span class="line"></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-<h2 id="发布">发布</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> public</span><br><span class="line"></span><br><span class="line">git init</span><br><span class="line"></span><br><span class="line">git remote blog add git@git.com:zhaoqun1021/zhaoqun1021.github.io</span><br><span class="line"></span><br><span class="line">将所有文件备份</span><br><span class="line"></span><br><span class="line">git pull blog master</span><br><span class="line"></span><br><span class="line">将备份的文件再覆盖回来</span><br><span class="line"></span><br><span class="line">git add *</span><br><span class="line"></span><br><span class="line">git commit -m <span class="string">'cc'</span></span><br><span class="line"></span><br><span class="line">git push blog master</span><br></pre></td></tr></table></figure>
-<h2 id="Other">Other</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">_config.yml:</span><br><span class="line">	archive_dir：归档位置？ </span><br><span class="line">	category_dir:分类URL名称？</span><br><span class="line"></span><br><span class="line">主题：</span><br><span class="line">	hexo-theme-yilia</span><br><span class="line"></span><br><span class="line">编辑器:</span><br><span class="line">    sublime + MarkdownEditing + MarkdownPreview</span><br><span class="line">    http://www.jianshu.com/p/<span class="number">378338</span>f10263</span><br><span class="line">    插件：</span><br><span class="line">        package install</span><br><span class="line">        imesurpport</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/cc/">cc</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 </div>
       <footer id="footer">

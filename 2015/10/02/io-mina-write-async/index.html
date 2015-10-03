@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: io | Zhao Qun&#39;s blog</title>
+  <title>Mina写异步的实现 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Zhao Qun's blog">
-<meta property="og:url" content="http://yoursite.com/io/index.html">
+  <meta name="description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
+发送数据时的代码流程关键点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mina写异步的实现">
+<meta property="og:url" content="http://yoursite.com/2015/10/02/io-mina-write-async/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description">
+<meta property="og:description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
+发送数据时的代码流程关键点">
+<meta property="og:updated_time" content="2015-10-02T14:49:49.187Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zhao Qun's blog">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Mina写异步的实现">
+<meta name="twitter:description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
+发送数据时的代码流程关键点">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -130,177 +134,83 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap">
+      <div class="body-wrap"><article id="post-io-mina-write-async" class="article article-type-post" itemscope itemprop="blogPost">
   
+    <div class="article-meta">
+      <a href="/2015/10/02/io-mina-write-async/" class="article-date">
+  	<time datetime="2015-10-02T14:45:10.000Z" itemprop="datePublished">2015-10-02</time>
+</a>
+    </div>
   
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mina写异步的实现
+    </h1>
+  
+
+      </header>
       
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
     
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/10/02/io-mina-write-async/" class="archive-article-date">
-  	<time datetime="2015-10-02T14:45:10.000Z" itemprop="datePublished">Oct 2</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/10/02/io-mina-write-async/">Mina写异步的实现</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="摘要">摘要</h2><p>异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。</p>
+<h2 id="发送数据时的代码流程">发送数据时的代码流程</h2><h2 id="关键点">关键点</h2>
+      
+    </div>
+    
   </div>
-</article>
   
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/10/02/io-mina-io-thread-model/" class="archive-article-date">
-  	<time datetime="2015-10-02T08:56:02.000Z" itemprop="datePublished">Oct 2</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/10/02/io-mina-io-thread-model/">MinaIO线程模型</a>
-    </h1>
   
+    <a href="/2015/10/02/io-mina-io-thread-model/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">MinaIO线程模型</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
 
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
 	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/09/29/io-mina-filter-chain/" class="archive-article-date">
-  	<time datetime="2015-09-29T08:55:42.000Z" itemprop="datePublished">Sep 29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/09/29/io-mina-filter-chain/">Mina之责任链模式实现</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
-	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/09/23/io-epoll-model/" class="archive-article-date">
-  	<time datetime="2015-09-23T03:25:16.000Z" itemprop="datePublished">Sep 23</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/09/23/io-epoll-model/">Epoll模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/01/19/io-21st-tcp/" class="archive-article-date">
-  	<time datetime="2015-01-19T06:09:48.000Z" itemprop="datePublished">Jan 19</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/01/19/io-21st-tcp/">21世纪的TCP</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 </div>
       <footer id="footer">
@@ -326,10 +236,10 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false
 	}
 </script>
