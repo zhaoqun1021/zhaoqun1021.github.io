@@ -30,7 +30,7 @@ prepare阶段：Proposer使用序号s向过半数的">
 
 prepare阶段：Proposer使用序号s向过半数的">
 <meta property="og:image" content="http://ww3.sinaimg.cn/mw690/414d7865gw1ewqonyl791j20jm0cmqfi.jpg">
-<meta property="og:updated_time" content="2015-10-05T18:33:20.070Z">
+<meta property="og:updated_time" content="2015-10-05T18:37:42.122Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式一致性协议-Paxos">
 <meta name="twitter:description" content="Paxos简述paxos协议可能难以理解，但是并不复杂，简单来说主要基于以下几个原则：
@@ -209,7 +209,7 @@ prepare阶段：Proposer使用序号s向过半数的">
 </li>
 <li><p>accept阶段：如果Proposer收到了半数以上Acceptor的响应则发出accept请求，请求内容包含之前prepare请求的序号，以及本次提案的值，如果prepare阶段半数以上Acceptor响应的提案全部为空，则本次accept请求的值为Proposer要提交提案的值，如果prepare阶段过半数响应中有非空提案，则本次accept请求的值为提案集合中序号最大提案的值。Acceptor收到请求后仍然只需要检查序号是否符合要求，只要序号符号要求就会通过提案响应请求。</p>
 </li>
-<li><p>commit阶段：如果Proposer收到了来自半数以上Acceptor的accept请求响应，则发出commit请求，通知所有Acceptor提交之前通过的提案。</p>
+<li><p>commit阶段：如果Proposer收到了来自半数以上Acceptor的accept请求响应，则发出commit请求给每个Acceptor，通知所有Acceptor提交之前通过的提案。</p>
 </li>
 </ul>
 <h2 id="官方阐述">官方阐述</h2><p><img src="http://ww3.sinaimg.cn/mw690/414d7865gw1ewqonyl791j20jm0cmqfi.jpg" alt="官方阐述"> </p>
