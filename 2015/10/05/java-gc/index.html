@@ -3,18 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Java并发——AQS | Zhao Qun&#39;s blog</title>
+  <title>Java垃圾回收 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="摘要">
+  <meta name="description" content="概念内存回收因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。
+分代正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java并发——AQS">
-<meta property="og:url" content="http://yoursite.com/2015/10/01/java-concurrent-aqs/index.html">
+<meta property="og:title" content="Java垃圾回收">
+<meta property="og:url" content="http://yoursite.com/2015/10/05/java-gc/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description" content="摘要">
-<meta property="og:updated_time" content="2015-10-05T10:53:11.588Z">
+<meta property="og:description" content="概念内存回收因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。
+分代正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简">
+<meta property="og:updated_time" content="2015-10-05T11:29:26.522Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java并发——AQS">
-<meta name="twitter:description" content="摘要">
+<meta name="twitter:title" content="Java垃圾回收">
+<meta name="twitter:description" content="概念内存回收因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。
+分代正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -131,11 +134,11 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-java-concurrent-aqs" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-java-gc" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/10/01/java-concurrent-aqs/" class="article-date">
-  	<time datetime="2015-10-01T03:02:59.000Z" itemprop="datePublished">2015-10-01</time>
+      <a href="/2015/10/05/java-gc/" class="article-date">
+  	<time datetime="2015-10-05T10:52:34.000Z" itemprop="datePublished">2015-10-05</time>
 </a>
     </div>
   
@@ -148,7 +151,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Java并发——AQS
+      Java垃圾回收
     </h1>
   
 
@@ -168,7 +171,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="摘要">摘要</h2>
+        <h2 id="概念">概念</h2><h4 id="内存回收">内存回收</h4><p>因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。</p>
+<h4 id="分代">分代</h4><p>正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简单的方式是提高回收线程的执行频率，但是这将导致性能问题，对象的生命周期内将被检查多次，生命周期长的对象将被无谓的多次被检查。为了权衡两者的关系，这才催生了另一个概念：分代，不同生命周期的对象分别放在不同的区域，不同区域的回收频率不同，这大大提高系统效率。</p>
+<h4 id="垃圾回收算法">垃圾回收算法</h4><ul>
+<li>年轻代算法：标记复制。因为年轻代的垃圾回收频率高，年轻代的回收时间应该越短越好，所以年轻代以空间换时间，使用标记复制算法。</li>
+<li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
+</ul>
+<h2 id="垃圾回收器">垃圾回收器</h2><h4 id="年轻代">年轻代</h4><h4 id="年老代">年老代</h4><h4 id="组合方式">组合方式</h4><h2 id="重点介绍CMS">重点介绍CMS</h2>
       
     </div>
     
@@ -177,18 +186,9 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/10/02/io-mina-io-thread-model/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          Mina-IO线程模型
-        
-      </div>
-    </a>
   
-  
-    <a href="/2015/09/29/io-mina-filter-chain/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Mina之责任链模式实现</div>
+    <a href="/2015/10/05/distributed-rpc-dubbo/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">RPC框架-dubbo</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
