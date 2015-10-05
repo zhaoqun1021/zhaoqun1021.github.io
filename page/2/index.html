@@ -227,7 +227,7 @@
 <li>thread_pool_oversubscribe:该参数用于控制CPU核心上“超频”的线程数。这个参数设置值不含listen线程计数。</li>
 <li>threadpool_high_prio_mode:表示优先队列的模式。</li>
 </ul>
-<h2 id="线程池实现">线程池实现</h2><p><img src="http://jbcdn2.b0.upaiyun.com/2015/07/28c8edde3d61a0411511d3b1866f0636.png" alt="线程池实现"><br>每一个绿色的方框代表一个group，group的数量由thread_pool_size参数决定。</p>
+<h2 id="线程池实现">线程池实现</h2><p><img src="http://ww4.sinaimg.cn/mw690/414d7865gw1ewqokqbt2hj20o40cit9k.jpg" alt="线程池实现"><br>每一个绿色的方框代表一个group，group的数量由thread_pool_size参数决定。</p>
 <p>每个group包含一个普通队列和一个优先队列，包含一个listen线程和若干worker线程，两种线程间可以动态转换，worker线程数量由工作负载决定，同时也受thread_pool_oversubscribe参数影响。普通队列中的任务超过一定时间未被执行会被列入优先队列，而优先队列的任务会被优先执行。</p>
 <p>整个group组有一个timer监控线程。</p>
 
