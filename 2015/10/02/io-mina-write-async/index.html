@@ -6,18 +6,18 @@
   <title>Mina-写异步实现 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
-发送数据时的代码流程关键点">
+发送数据时的代码流程调用session.write() -&amp;gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&amp;gt; 从TailFilt">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mina-写异步实现">
 <meta property="og:url" content="http://yoursite.com/2015/10/02/io-mina-write-async/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
 <meta property="og:description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
-发送数据时的代码流程关键点">
-<meta property="og:updated_time" content="2015-10-03T04:00:30.007Z">
+发送数据时的代码流程调用session.write() -&amp;gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&amp;gt; 从TailFilt">
+<meta property="og:updated_time" content="2015-10-04T06:56:48.215Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mina-写异步实现">
 <meta name="twitter:description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
-发送数据时的代码流程关键点">
+发送数据时的代码流程调用session.write() -&amp;gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&amp;gt; 从TailFilt">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -172,7 +172,11 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="摘要">摘要</h2><p>异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。</p>
-<h2 id="发送数据时的代码流程">发送数据时的代码流程</h2><h2 id="关键点">关键点</h2>
+<h2 id="发送数据时的代码流程">发送数据时的代码流程</h2><p>调用session.write() -&gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&gt; 从TailFilter一直到HeadFilter，在HeadFilter中调用processor.write方法 -&gt; AbstractPollingIoProcessor.write:将session列入flushingSession当中，随后的IO线程将发送flushingSession中session的WriteRequestQueue所有WriteRequest。</p>
+<h2 id="WriteFuture">WriteFuture</h2><p>因为是异步操作，所以Future是必不可少的，Mina提供了WriteFuture作为WriteRequest发送成功后的通知。WriteFuture被组合在WriteRequest当中，并在调用session.write()时返回。<br>DefaultWriteFuture -&gt; DefaultIoFuture</p>
+<p>WriteFuture阻塞：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public IoFuture await() throws InterruptedException &#123;</span><br><span class="line">    synchronized (lock) &#123;</span><br><span class="line">        <span class="keyword">while</span> (!ready) &#123;</span><br><span class="line">            waiters++;</span><br><span class="line">            try &#123;</span><br><span class="line">                // Wait <span class="keyword">for</span> a notify, or <span class="keyword">if</span> no notify is called,</span><br><span class="line">                // assume that we have a deadlock and <span class="built_in">exit</span> the </span><br><span class="line">                // loop to check <span class="keyword">for</span> a potential deadlock.</span><br><span class="line">                lock.wait(DEAD_LOCK_CHECK_INTERVAL);</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line">                waiters--;</span><br><span class="line">                <span class="keyword">if</span> (!ready) &#123;</span><br><span class="line">                    checkDeadLock();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> this;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当IO线程将WriteRequest发送完成时，调用filterChain的fireMessageSent()，唤醒等待的线程。<br>WriteFuture释放：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void <span class="built_in">set</span>Value(Object newValue) &#123;</span><br><span class="line">    synchronized (lock) &#123;</span><br><span class="line">        // Allow only once.</span><br><span class="line">        <span class="keyword">if</span> (ready) &#123;</span><br><span class="line">            <span class="built_in">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        result = newValue;</span><br><span class="line">        ready = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (waiters &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            lock.notifyAll();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    notifyListeners();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
       
     </div>
     
