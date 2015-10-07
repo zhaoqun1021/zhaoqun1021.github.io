@@ -5,18 +5,18 @@
   
   <title>21世纪的TCP | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="关于TCP几年前开始窥探TCP协议具体实现的时候，不禁折服于TCP的复杂和优雅，即便它并不完美也不能解决所有问题。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然是一门古老的学科，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。
+  <meta name="description" content="关于TCPTCP有几十年的发展历史，可以算得上一门古老的学问，虽然它并不完美也不能解决所有问题，但是足够复杂，足够优雅。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然说古老，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。
 ##">
 <meta property="og:type" content="article">
 <meta property="og:title" content="21世纪的TCP">
 <meta property="og:url" content="http://yoursite.com/2015/01/19/io-tcp-21st/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description" content="关于TCP几年前开始窥探TCP协议具体实现的时候，不禁折服于TCP的复杂和优雅，即便它并不完美也不能解决所有问题。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然是一门古老的学科，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。
+<meta property="og:description" content="关于TCPTCP有几十年的发展历史，可以算得上一门古老的学问，虽然它并不完美也不能解决所有问题，但是足够复杂，足够优雅。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然说古老，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。
 ##">
-<meta property="og:updated_time" content="2015-10-07T04:11:02.891Z">
+<meta property="og:updated_time" content="2015-10-07T07:30:59.323Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="21世纪的TCP">
-<meta name="twitter:description" content="关于TCP几年前开始窥探TCP协议具体实现的时候，不禁折服于TCP的复杂和优雅，即便它并不完美也不能解决所有问题。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然是一门古老的学科，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。
+<meta name="twitter:description" content="关于TCPTCP有几十年的发展历史，可以算得上一门古老的学问，虽然它并不完美也不能解决所有问题，但是足够复杂，足够优雅。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然说古老，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。
 ##">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
@@ -171,7 +171,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="关于TCP">关于TCP</h2><p>几年前开始窥探TCP协议具体实现的时候，不禁折服于TCP的复杂和优雅，即便它并不完美也不能解决所有问题。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然是一门古老的学科，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。</p>
+        <h2 id="关于TCP">关于TCP</h2><p>TCP有几十年的发展历史，可以算得上一门古老的学问，虽然它并不完美也不能解决所有问题，但是足够复杂，足够优雅。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然说古老，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。</p>
 <p>## </p>
 
       
