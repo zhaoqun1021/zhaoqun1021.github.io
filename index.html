@@ -185,7 +185,7 @@
 <li>last_ack：close_wait状态中发送fin报文之后进入last_ack状态</li>
 <li>fin_wait_1：主动发送fin报文之后进入fin_wait_1状态，等待ack返回</li>
 <li>fin_wait_2：收到ack后等待对方发送fin报文，此时可能还有数据包到达</li>
-<li>time_wait：收到fin报文并响应ack后进入time_wait状态，time_wait状态将持续MSL<em>2的时间，主要出于两个原因:1.尽力确保最后的ack送达，如果ack超时，对方会重发fin，要等待fin以及ack两个报文的线路存在时间，所以需要</em>2；2.确保本链接关闭时不会影响后面新建立的连接，如果没有time_wait状态而直接关闭并且马上在同样的端口号又重建了一个连接，而最后发送的ack又超时，对方重发fin，这又将新建立的连接关闭了。</li>
+<li>time_wait：收到fin报文并响应ack后进入time_wait状态，time_wait状态将持续MSL ×　2的时间，主要出于两个原因:1.尽力确保最后的ack送达，如果ack超时，对方会重发fin，要等待fin以及ack两个报文的线路存在时间，所以需要*2；2.确保本链接关闭时不会影响后面新建立的连接，如果没有time_wait状态而直接关闭并且马上在同样的端口号又重建了一个连接，而最后发送的ack又超时，对方重发fin，这又将新建立的连接关闭了。</li>
 <li>closing：此状态相对比较特殊，主动发送fin后，没有收到ack却收到了fin（双方同时关闭连接），此时响应ack并进入closing状态，随后当收到ack时进入time_wait状态</li>
 </ul>
 
