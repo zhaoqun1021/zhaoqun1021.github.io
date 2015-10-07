@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: distributed | Zhao Qun&#39;s blog</title>
+  <title>Java并发——AQS | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Zhao Qun's blog">
-<meta property="og:url" content="http://yoursite.com/distributed/index.html">
+  <meta name="description" content="摘要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java并发——AQS">
+<meta property="og:url" content="http://yoursite.com/2015/02/04/java-concurrent-aqs/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description">
+<meta property="og:description" content="摘要">
+<meta property="og:updated_time" content="2015-10-07T07:28:44.390Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Zhao Qun's blog">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Java并发——AQS">
+<meta name="twitter:description" content="摘要">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -130,115 +131,91 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap">
+      <div class="body-wrap"><article id="post-java-concurrent-aqs" class="article article-type-post" itemscope itemprop="blogPost">
   
+    <div class="article-meta">
+      <a href="/2015/02/04/java-concurrent-aqs/" class="article-date">
+  	<time datetime="2015-02-04T03:02:59.000Z" itemprop="datePublished">2015-02-04</time>
+</a>
+    </div>
   
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java并发——AQS
+    </h1>
+  
+
+      </header>
       
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/java/">java</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
     
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/26/distributed-consistency-zab/" class="archive-article-date">
-  	<time datetime="2015-02-26T10:09:34.000Z" itemprop="datePublished">Feb 26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/26/distributed-consistency-zab/">分布式一致性协议-ZAB</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/distributed/">distributed</a>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="摘要">摘要</h2>
+      
+    </div>
+    
   </div>
-</article>
   
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/25/distributed-consistency-paxos/" class="archive-article-date">
-  	<time datetime="2015-02-25T10:09:21.000Z" itemprop="datePublished">Feb 25</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/25/distributed-consistency-paxos/">分布式一致性协议-Paxos</a>
-    </h1>
+    <a href="/2015/02/06/io-tcp-points/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          TCP的那些事
+        
+      </div>
+    </a>
   
+  
+    <a href="/2015/02/03/java-gc/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Java垃圾回收</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
 
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/distributed/">distributed</a>
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
 	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/21/distributed-rpc-dubbo/" class="archive-article-date">
-  	<time datetime="2015-02-21T10:14:45.000Z" itemprop="datePublished">Feb 21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/21/distributed-rpc-dubbo/">RPC框架-dubbo</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/distributed/">distributed</a>
-	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 </div>
       <footer id="footer">
@@ -264,10 +241,10 @@
 		mathjax: true,
 		animate: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false
 	}
 </script>
