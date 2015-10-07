@@ -132,6 +132,90 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-io-tcp-points" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/06/io-tcp-points/" class="article-date">
+  	<time datetime="2015-10-06T11:24:09.000Z" itemprop="datePublished">2015-10-06</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/06/io-tcp-points/">TCP的那些事</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="延迟ack">延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
+<p>至于延迟ack的意义，除了上文提到的可以提高ack的传输效率，还可以进行“捎带”操作。</p>
+<p>延迟ack似乎也只是在正常情况下才会使用，那什么情况下接收方不会累计确认而会立即响应ack呢？看一下ack的发送时机:</p>
+<ul>
+<li>首先，延迟的ack，当收到第一个数据包并等待第二个数据包传输时，等待超过50ms则立即发送ack</li>
+<li>其次，累积确认的ack，第一次收到的数据包未响应ack，第二次收到数据包时则立即发送ack</li>
+<li>发现有失序到达的数据包时，立即响应冗余ack</li>
+<li>发现有比失序到达的数据包序号更小的数据包时，立即响应ack</li>
+</ul>
+<h2 id="拥塞控制">拥塞控制</h2><ul>
+<li>CongWin：拥塞窗口大小，已经发送但还未收到ack的数据包数量；</li>
+<li>慢启动：当tcp开始传输时CongWin大小为1，每收到一个ack后CongWin++,即每过一个RTT之后CongWin = CongWin*2；</li>
+<li>拥塞避免：当速率到达某个值(slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTTCongWin++；</li>
+<li>超时丢包：当发生超时丢包时，TCP认为情况太糟糕，反应很强烈，CongWin = 1，ssthresh = CongWin/2，重新进入慢启动过程。</li>
+<li>收到3个冗余ack丢包：当发送方收到3个冗余ack时，CongWin = CongWin/2，ssthresh = CongWin，进入拥塞避免；</li>
+<li>快速恢复：当发生超时丢包后又收到了3个冗余ack，那么TCP认为网络情况还没有之认为的那么严重，随机进入拥塞避免，即CongWin恢复为丢包时的一半，ssthresh恢复为丢包时的CongWin值。</li>
+</ul>
+<h2 id="状态汇总">状态汇总</h2><ul>
+<li>closed</li>
+<li>listen</li>
+<li>syn_sent</li>
+<li>syn_rcvd</li>
+<li>established</li>
+<li>close_wait：接收到FIN并响应ack后进入close_wait状态，此状态时如果还有未发送完成的数据则可以继续发送</li>
+<li>last_ack：close_wait状态中发送fin报文之后进入last_ack状态</li>
+<li>fin_wait_1：主动发送fin报文之后进入fin_wait_1状态，等待ack返回</li>
+<li>fin_wait_2：收到ack后等待对方发送fin报文，此时可能还有数据包到达</li>
+<li>time_wait：收到fin报文并响应ack后进入time_wait状态，time_wait状态将持续MSL<em>2的时间，主要出于两个原因:1.尽力确保最后的ack送达，如果ack超时，对方会重发fin，要等待fin以及ack两个报文的线路存在时间，所以需要</em>2；2.确保本链接关闭时不会影响后面新建立的连接，如果没有time_wait状态而直接关闭并且马上在同样的端口号又重建了一个连接，而最后发送的ack又超时，对方重发fin，这又将新建立的连接关闭了。</li>
+<li>closing：此状态相对比较特殊，主动发送fin后，没有收到ack却收到了fin（双方同时关闭连接），此时响应ack并进入closing状态，随后当收到ack时进入time_wait状态</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
     <article id="post-java-gc" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -706,6 +790,8 @@
 <p>运行时包的存在同样是出于安全考虑。</p>
 <h2 id="自定义加载器">自定义加载器</h2><p>如何实现自定义加载器？</p>
 <p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
+<h2 id="JavaEE的类加载">JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。avaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。</p>
+<p>JavaEE的 委派模型：<br><img src="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg" alt="JavaEE的类加载"></p>
 
       
     </div>
@@ -716,60 +802,6 @@
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-io-epoll-model" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/09/23/io-epoll-model/" class="article-date">
-  	<time datetime="2015-09-23T03:25:16.000Z" itemprop="datePublished">2015-09-23</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/23/io-epoll-model/">Epoll模型</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
