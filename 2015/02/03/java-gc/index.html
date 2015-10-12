@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Zhao Qun's blog">
 <meta property="og:description" content="概念内存回收因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。
 分代正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简">
-<meta property="og:updated_time" content="2015-10-07T07:28:37.975Z">
+<meta property="og:updated_time" content="2015-10-07T08:31:38.253Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java垃圾回收">
 <meta name="twitter:description" content="概念内存回收因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。
@@ -177,7 +177,18 @@
 <li>年轻代算法：标记复制。因为年轻代的垃圾回收频率高，年轻代的回收时间应该越短越好，所以年轻代以空间换时间，使用标记复制算法。</li>
 <li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
 </ul>
-<h2 id="垃圾回收器">垃圾回收器</h2><h4 id="年轻代">年轻代</h4><h4 id="年老代">年老代</h4><h4 id="组合方式">组合方式</h4><h2 id="重点介绍CMS">重点介绍CMS</h2>
+<h2 id="垃圾回收器">垃圾回收器</h2><h4 id="年轻代">年轻代</h4><h4 id="年老代">年老代</h4><h4 id="组合方式">组合方式</h4><h2 id="重点介绍CMS">重点介绍CMS</h2><p>CMS有何缺点？</p>
+<ul>
+<li>减小吞吐量</li>
+<li>造成浮动垃圾，增加了碎片问题负担</li>
+</ul>
+<p>CMS模式下何时会触发FullGC？</p>
+<ul>
+<li>Concurrent-mode-failure：空间问题；Promotion-mode-failure：碎片问题</li>
+<li>持久代满，且未启用 CMSClassUnloadingEnabled</li>
+<li>显式调用System.gc，且未启用ExplicitGCInvokesConcurrent</li>
+</ul>
+
       
     </div>
     

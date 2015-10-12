@@ -32,7 +32,9 @@
 机制除根加载器外，每个类加载器都有父加载器，当加载某个类时首先让父加载器（加载器链路）们尝试加载，如果父加载器们加载失败，则捕获异常并调用自己的findClass方法尝试加载。
 依赖顺序：自定义加载器-&amp;gt;系统">
 <meta property="og:image" content="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg">
-<meta property="og:updated_time" content="2015-10-07T07:28:56.383Z">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmbxmee0j20lj088q3w.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmaslm26j20lf086wff.jpg">
+<meta property="og:updated_time" content="2015-10-07T07:48:46.914Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java类加载">
 <meta name="twitter:description" content="JVM的三种加载器根加载器
@@ -221,6 +223,8 @@
 <p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
 <h2 id="JavaEE的类加载">JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。avaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。</p>
 <p>JavaEE的 委派模型：<br><img src="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg" alt="JavaEE的类加载"></p>
+<h2 id="类加载过程">类加载过程</h2><p>加载、连接、初始化：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmbxmee0j20lj088q3w.jpg" alt="类加载过程"></p>
+<p>连接阶段：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmaslm26j20lf086wff.jpg" alt="类加载过程"></p>
 
       
     </div>
