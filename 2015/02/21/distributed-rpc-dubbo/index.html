@@ -3,30 +3,36 @@
 <head>
   <meta charset="utf-8">
   
-  <title>RPC框架-dubbo | Zhao Qun&#39;s blog</title>
+  <title>RPC框架-Dubbo | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它
+  <meta name="description" content="Dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它
 
 足够健壮，有多年生产环境实践经验；
 足够开放，它所依赖的都是开源且流行的组件；
-足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。">
+足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。
+
+关于Dubbo">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RPC框架-dubbo">
+<meta property="og:title" content="RPC框架-Dubbo">
 <meta property="og:url" content="http://yoursite.com/2015/02/21/distributed-rpc-dubbo/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
-<meta property="og:description" content="dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它
+<meta property="og:description" content="Dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它
 
 足够健壮，有多年生产环境实践经验；
 足够开放，它所依赖的都是开源且流行的组件；
-足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。">
-<meta property="og:updated_time" content="2015-10-09T11:56:58.297Z">
+足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。
+
+关于Dubbo">
+<meta property="og:updated_time" content="2015-10-12T10:37:57.311Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="RPC框架-dubbo">
-<meta name="twitter:description" content="dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它
+<meta name="twitter:title" content="RPC框架-Dubbo">
+<meta name="twitter:description" content="Dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它
 
 足够健壮，有多年生产环境实践经验；
 足够开放，它所依赖的都是开源且流行的组件；
-足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。">
+足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。
+
+关于Dubbo">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -160,7 +166,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      RPC框架-dubbo
+      RPC框架-Dubbo
     </h1>
   
 
@@ -180,11 +186,17 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="dubbo简介">dubbo简介</h2><p>dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它</p>
+        <h2 id="Dubbo简介">Dubbo简介</h2><p>dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它</p>
 <ul>
 <li>足够健壮，有多年生产环境实践经验；</li>
 <li>足够开放，它所依赖的都是开源且流行的组件；</li>
 <li>足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。</li>
+</ul>
+<h2 id="关于Dubbo的默认协议">关于Dubbo的默认协议</h2><p>Dubbo的默认协议即Dubbo协议，它使用单TCP链接的Hessian序列化协议，Hessian虽然性能不及ProtocolBuffer、Thrift，但其不需要中间解释文件，相对灵活，对于一般公司来说已经足够。至于单链接也许会存在争议，有人可能会说单链接存在带宽问题，其实如果不是某个请求发送大文件，业务之间不会相互影响，而且性能略好，但是如果网络环境较差再加上业务量陡增的话就悲催了。</p>
+<h2 id="架构简析">架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
+<ul>
+<li>从架构角度来说，Dubbo为Netty、Mina、Jetty等组件以及Hessian、Thrift等协议提供了平台，即Netty等提供数据传输功能，Hessian等提供协议功能，这样可以使各种方式灵活搭配以满足不同场景需要。</li>
+<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码。</li>
 </ul>
 
       
