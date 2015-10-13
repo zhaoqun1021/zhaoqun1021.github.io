@@ -11,10 +11,12 @@
 抢占式访问
 后者认同前者
 
-基本工作流程角色：Porposer -&amp;gt; 提案发起者，Acceptor -&amp;gt; 提案批准者
+基本工作流程关键词解释
+角色：Porposer -&amp;gt; 提案发起者，Acceptor -&amp;gt; 提案批准者
 序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求
 
-prepare阶段：Proposer使用序号s向过半数的">
+流程
+prepare阶段：Proposer使">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分布式一致性协议-Paxos">
 <meta property="og:url" content="http://yoursite.com/2015/02/25/distributed-consistency-paxos/index.html">
@@ -25,12 +27,14 @@ prepare阶段：Proposer使用序号s向过半数的">
 抢占式访问
 后者认同前者
 
-基本工作流程角色：Porposer -&amp;gt; 提案发起者，Acceptor -&amp;gt; 提案批准者
+基本工作流程关键词解释
+角色：Porposer -&amp;gt; 提案发起者，Acceptor -&amp;gt; 提案批准者
 序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求
 
-prepare阶段：Proposer使用序号s向过半数的">
+流程
+prepare阶段：Proposer使">
 <meta property="og:image" content="http://ww3.sinaimg.cn/mw690/414d7865gw1ewqonyl791j20jm0cmqfi.jpg">
-<meta property="og:updated_time" content="2015-10-07T07:30:18.326Z">
+<meta property="og:updated_time" content="2015-10-13T03:22:03.511Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式一致性协议-Paxos">
 <meta name="twitter:description" content="Paxos简述paxos协议可能难以理解，但是并不复杂，简单来说主要基于以下几个原则：
@@ -39,10 +43,12 @@ prepare阶段：Proposer使用序号s向过半数的">
 抢占式访问
 后者认同前者
 
-基本工作流程角色：Porposer -&amp;gt; 提案发起者，Acceptor -&amp;gt; 提案批准者
+基本工作流程关键词解释
+角色：Porposer -&amp;gt; 提案发起者，Acceptor -&amp;gt; 提案批准者
 序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求
 
-prepare阶段：Proposer使用序号s向过半数的">
+流程
+prepare阶段：Proposer使">
   
     <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
   
@@ -202,9 +208,11 @@ prepare阶段：Proposer使用序号s向过半数的">
 <li>抢占式访问</li>
 <li>后者认同前者</li>
 </ul>
-<h2 id="基本工作流程">基本工作流程</h2><p>角色：Porposer -&gt; 提案发起者，Acceptor -&gt; 提案批准者</p>
-<p>序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求</p>
-<ul>
+<h2 id="基本工作流程">基本工作流程</h2><h4 id="关键词解释">关键词解释</h4><ul>
+<li>角色：Porposer -&gt; 提案发起者，Acceptor -&gt; 提案批准者</li>
+<li>序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求</li>
+</ul>
+<h4 id="流程">流程</h4><ul>
 <li><p>prepare阶段：Proposer使用序号s向过半数的Accepor发送prepare请求，Acceptor收到请求后检查序号是否符合要求，一旦符合要求Acceptor则会响应请求表示通过。如果之前没有通过提案，响应中不包含任何提案信息，如果之前通过某些提案，则相应中包含最大序号的提案。</p>
 </li>
 <li><p>accept阶段：如果Proposer收到了半数以上Acceptor的响应则发出accept请求，请求内容包含之前prepare请求的序号，以及本次提案的值，如果prepare阶段半数以上Acceptor响应的提案全部为空，则本次accept请求的值为Proposer要提交提案的值，如果prepare阶段过半数响应中有非空提案，则本次accept请求的值为提案集合中序号最大提案的值。Acceptor收到请求后仍然只需要检查序号是否符合要求，只要序号符号要求就会通过提案响应请求。</p>

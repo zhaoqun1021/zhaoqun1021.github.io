@@ -219,9 +219,11 @@
 <li>抢占式访问</li>
 <li>后者认同前者</li>
 </ul>
-<h2 id="基本工作流程">基本工作流程</h2><p>角色：Porposer -&gt; 提案发起者，Acceptor -&gt; 提案批准者</p>
-<p>序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求</p>
-<ul>
+<h2 id="基本工作流程">基本工作流程</h2><h4 id="关键词解释">关键词解释</h4><ul>
+<li>角色：Porposer -&gt; 提案发起者，Acceptor -&gt; 提案批准者</li>
+<li>序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求</li>
+</ul>
+<h4 id="流程">流程</h4><ul>
 <li><p>prepare阶段：Proposer使用序号s向过半数的Accepor发送prepare请求，Acceptor收到请求后检查序号是否符合要求，一旦符合要求Acceptor则会响应请求表示通过。如果之前没有通过提案，响应中不包含任何提案信息，如果之前通过某些提案，则相应中包含最大序号的提案。</p>
 </li>
 <li><p>accept阶段：如果Proposer收到了半数以上Acceptor的响应则发出accept请求，请求内容包含之前prepare请求的序号，以及本次提案的值，如果prepare阶段半数以上Acceptor响应的提案全部为空，则本次accept请求的值为Proposer要提交提案的值，如果prepare阶段过半数响应中有非空提案，则本次accept请求的值为提案集合中序号最大提案的值。Acceptor收到请求后仍然只需要检查序号是否符合要求，只要序号符号要求就会通过提案响应请求。</p>
