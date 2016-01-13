@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>Archives | Zhao Qun&#39;s blog</title>
+  <title>Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
@@ -138,335 +138,737 @@
 
       <div class="body-wrap">
   
+    <article id="post-distributed-consistency-zab" class="article article-type-post" itemscope itemprop="blogPost">
   
+    <div class="article-meta">
+      <a href="/2015/02/26/distributed-consistency-zab/" class="article-date">
+  	<time datetime="2015-02-26T10:09:34.000Z" itemprop="datePublished">2015-02-26</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/26/distributed-consistency-zab/">分布式一致性协议-ZAB</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="ZAB_u534F_u8BAE"><a href="#ZAB_u534F_u8BAE" class="headerlink" title="ZAB协议"></a>ZAB协议</h2><p>ZAB协议是zookeeper集群的一致性协议，它并不是paxos的实现，而只是借鉴了paxos的部分思路（比如少数服从多数），使之能完成paxos的部分功能。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/26/distributed-consistency-zab/" class="archive-article-date">
-  	<time datetime="2015-02-26T10:09:34.000Z" itemprop="datePublished">Feb 26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/26/distributed-consistency-zab/">分布式一致性协议-ZAB</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/distributed/">distributed</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/25/distributed-consistency-paxos/" class="archive-article-date">
-  	<time datetime="2015-02-25T10:09:21.000Z" itemprop="datePublished">Feb 25</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-distributed-consistency-paxos" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/25/distributed-consistency-paxos/" class="article-date">
+  	<time datetime="2015-02-25T10:09:21.000Z" itemprop="datePublished">2015-02-25</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/25/distributed-consistency-paxos/">分布式一致性协议-Paxos</a>
+      <a class="article-title" href="/2015/02/25/distributed-consistency-paxos/">分布式一致性协议-Paxos</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Paxos_u7B80_u8FF0"><a href="#Paxos_u7B80_u8FF0" class="headerlink" title="Paxos简述"></a>Paxos简述</h2><p>paxos协议可能难以理解，但是并不复杂，简单来说主要基于以下几个原则：</p>
+<ul>
+<li>少数服从多数</li>
+<li>抢占式访问</li>
+<li>后者认同前者</li>
+</ul>
+<h2 id="u57FA_u672C_u5DE5_u4F5C_u6D41_u7A0B"><a href="#u57FA_u672C_u5DE5_u4F5C_u6D41_u7A0B" class="headerlink" title="基本工作流程"></a>基本工作流程</h2><h4 id="u5173_u952E_u8BCD_u89E3_u91CA"><a href="#u5173_u952E_u8BCD_u89E3_u91CA" class="headerlink" title="关键词解释"></a>关键词解释</h4><ul>
+<li>角色：Porposer -&gt; 提案发起者，Acceptor -&gt; 提案批准者</li>
+<li>序号：每个提案都有唯一序号，序号按时间顺序生成，Acceptor只会接受最新序号的也就是时间最新的提案请求</li>
+</ul>
+<h4 id="u6D41_u7A0B"><a href="#u6D41_u7A0B" class="headerlink" title="流程"></a>流程</h4><ul>
+<li><p>prepare阶段：Proposer使用序号s向过半数的Accepor发送prepare请求，Acceptor收到请求后检查序号是否符合要求，一旦符合要求Acceptor则会响应请求表示通过。如果之前没有通过提案，响应中不包含任何提案信息，如果之前通过某些提案，则相应中包含最大序号的提案。</p>
+</li>
+<li><p>accept阶段：如果Proposer收到了半数以上Acceptor的响应则发出accept请求，请求内容包含之前prepare请求的序号，以及本次提案的值，如果prepare阶段半数以上Acceptor响应的提案全部为空，则本次accept请求的值为Proposer要提交提案的值，如果prepare阶段过半数响应中有非空提案，则本次accept请求的值为提案集合中序号最大提案的值。Acceptor收到请求后仍然只需要检查序号是否符合要求，只要序号符号要求就会通过提案响应请求。</p>
+</li>
+<li><p>commit阶段：如果Proposer收到了来自半数以上Acceptor的accept请求响应，则发出commit请求给每个Acceptor，通知所有Acceptor提交之前通过的提案。</p>
+</li>
+</ul>
+<h2 id="u5B98_u65B9_u9610_u8FF0"><a href="#u5B98_u65B9_u9610_u8FF0" class="headerlink" title="官方阐述"></a>官方阐述</h2><p><img src="http://ww3.sinaimg.cn/mw690/414d7865gw1ewqonyl791j20jm0cmqfi.jpg" alt="官方阐述"> </p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/distributed/">distributed</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/21/distributed-rpc-dubbo/" class="archive-article-date">
-  	<time datetime="2015-02-21T10:14:45.000Z" itemprop="datePublished">Feb 21</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-distributed-rpc-dubbo" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/21/distributed-rpc-dubbo/" class="article-date">
+  	<time datetime="2015-02-21T10:14:45.000Z" itemprop="datePublished">2015-02-21</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/21/distributed-rpc-dubbo/">RPC框架-Dubbo</a>
+      <a class="article-title" href="/2015/02/21/distributed-rpc-dubbo/">RPC框架-Dubbo</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Dubbo_u7B80_u4ECB"><a href="#Dubbo_u7B80_u4ECB" class="headerlink" title="Dubbo简介"></a>Dubbo简介</h2><p>dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它</p>
+<ul>
+<li>足够健壮，有多年生产环境实践经验；</li>
+<li>足够开放，它所依赖的都是开源且流行的组件；</li>
+<li>足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。</li>
+</ul>
+<h2 id="u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE"><a href="#u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE" class="headerlink" title="关于Dubbo的默认协议"></a>关于Dubbo的默认协议</h2><p>Dubbo的默认协议即Dubbo协议，它使用单TCP链接的Hessian序列化协议，Hessian虽然性能不及ProtocolBuffer、Thrift，但其不需要中间解释文件，相对灵活，对于一般公司来说已经足够。至于单链接也许会存在争议，有人可能会说单链接存在带宽问题，其实如果不是某个请求发送大文件，业务之间不会相互影响，而且性能略好，但是如果网络环境较差再加上业务量陡增的话就悲催了。</p>
+<h2 id="u67B6_u6784_u7B80_u6790"><a href="#u67B6_u6784_u7B80_u6790" class="headerlink" title="架构简析"></a>架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
+<ul>
+<li>从架构角度来说，Dubbo为Netty、Mina、Jetty等组件以及Hessian、Thrift等协议提供了平台，即Netty等提供数据传输功能，Hessian等提供协议功能，这样可以使各种方式灵活搭配以满足不同场景需要。</li>
+<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码。</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/distributed/">distributed</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/20/io-epoll-model/" class="archive-article-date">
-  	<time datetime="2015-02-20T03:25:16.000Z" itemprop="datePublished">Feb 20</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-io-epoll-model" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/20/io-epoll-model/" class="article-date">
+  	<time datetime="2015-02-20T03:25:16.000Z" itemprop="datePublished">2015-02-20</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/20/io-epoll-model/">Epoll模型</a>
+      <a class="article-title" href="/2015/02/20/io-epoll-model/">Epoll模型</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="epoll_u63D0_u4F9B_u7684_u63A5_u53E3"><a href="#epoll_u63D0_u4F9B_u7684_u63A5_u53E3" class="headerlink" title="epoll提供的接口"></a>epoll提供的接口</h2><p>epoll提供了3个系统调用</p>
+<ul>
+<li>epoll_create；创建一个epoll</li>
+<li>epoll_ctl：将文件句柄添加到epol中，并注册相关事件到文件句柄</li>
+<li>epoll_wait：返回活跃文件句柄</li>
+</ul>
+<h2 id="u5B9E_u73B0_u673A_u5236"><a href="#u5B9E_u73B0_u673A_u5236" class="headerlink" title="实现机制"></a>实现机制</h2><h4 id="u4E3B_u8981_u6570_u636E_u7ED3_u6784"><a href="#u4E3B_u8981_u6570_u636E_u7ED3_u6784" class="headerlink" title="主要数据结构"></a>主要数据结构</h4><ul>
+<li>句柄树：为方便查找，epoll使用二叉树存储所有句柄；</li>
+<li>句柄数组：epoll在用户空间创建句柄数组，用来存放当前活跃句柄。</li>
+</ul>
+<h4 id="u6D41_u7A0B"><a href="#u6D41_u7A0B" class="headerlink" title="流程"></a>流程</h4><ul>
+<li>当句柄状态发生变化时会主动将句柄添加到用户空间的句柄数组中；</li>
+<li>当调用epoll_wait时，epoll返回句柄数组的内存地址，用户通过内存地址就可以获取当前活跃的句柄信息。</li>
+</ul>
+<h2 id="ET_u4E0ELT_u6A21_u5F0F"><a href="#ET_u4E0ELT_u6A21_u5F0F" class="headerlink" title="ET与LT模式"></a>ET与LT模式</h2><p>ET:边缘触发、LT:水平触发<br>最初epoll只提供了ET模式，因为ET模式对于用户来说难以操作，才妥协推出了性能稍低LT模式，那就看一下两者的区别；</p>
+<h4 id="u533A_u522B"><a href="#u533A_u522B" class="headerlink" title="区别"></a>区别</h4><p>ET模式下，只有某个描述符的状态变为可用后（不可读变为可读/不可写变为可写），调用epoll_wait才会返回该描述符。LT模式下，只要当某个描述符处于某种状态时（可读/可写），每次调用epoll_wait都会返回该描述符；<br>当用户使用ET模式时，需要在两次epoll_wait调用之间将活跃的描述符一次性将数据读完，或者一次性将数据发完/填满,或者需要在用户代码中保存句柄状态。</p>
+<h4 id="u6027_u80FD_u5BF9_u6BD4"><a href="#u6027_u80FD_u5BF9_u6BD4" class="headerlink" title="性能对比"></a>性能对比</h4><p>从性能因素考虑，ET模式效率会高一些，因为活跃的描述符会存放在数组当中，LT模式下每当用户IO操作完成之后，要检查描述符的状态来确定是否删除数组中的描述符；而ET模式只要用户epoll_wait之后，扫过数组就会删除描述符;</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/12/io-mina-io-thread-model/" class="archive-article-date">
-  	<time datetime="2015-02-12T08:56:02.000Z" itemprop="datePublished">Feb 12</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-io-mina-io-thread-model" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/12/io-mina-io-thread-model/" class="article-date">
+  	<time datetime="2015-02-12T08:56:02.000Z" itemprop="datePublished">2015-02-12</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/12/io-mina-io-thread-model/">Mina-IO线程模型</a>
+      <a class="article-title" href="/2015/02/12/io-mina-io-thread-model/">Mina-IO线程模型</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Accept_u4E8B_u4EF6_u5904_u7406"><a href="#Accept_u4E8B_u4EF6_u5904_u7406" class="headerlink" title="Accept事件处理"></a>Accept事件处理</h2><ul>
+<li>继承关系：NioSocketAcceptor -&gt; AbstractPollingIoAcceptor -&gt; AbstractIoAcceptor -&gt; AbstractIoService</li>
+</ul>
+<h4 id="NioSocketAcceptor"><a href="#NioSocketAcceptor" class="headerlink" title="NioSocketAcceptor"></a>NioSocketAcceptor</h4><ul>
+<li><p>selector</p>
+</li>
+<li><p>init():初始化NIO.selector</p>
+</li>
+<li>open():将Accept事件注册到selector</li>
+<li>select():执行NIO.selector.select()</li>
+</ul>
+<h4 id="AbstractPollingIoAcceptor"><a href="#AbstractPollingIoAcceptor" class="headerlink" title="AbstractPollingIoAcceptor"></a>AbstractPollingIoAcceptor</h4><ul>
+<li>Acceptor -&gt; Runnable:run()</li>
+<li><p>SimpleIoProcessorPool -&gt; IoProcessor</p>
+</li>
+<li><p>bindInternal()：调用startupAcceptor(),执行Accept.run()；</p>
+</li>
+<li>Accept.run():调用open()、select(),将select()返回的SelectionKey通过accept(IoProcessor)初始化为NioSocketSession,随后初始化session，并将session绑定到processor(最终绑定processor的逻辑在SimpleIoProcessorPool.add(),该方法调用NioProcessor数组中某个NioProcessor的add方法将session与其绑定，第一次调用NioProcessor.add时将启动processor线程)</li>
+</ul>
+<h2 id="Read/Write_u4E8B_u4EF6_u5904_u7406"><a href="#Read/Write_u4E8B_u4EF6_u5904_u7406" class="headerlink" title="Read/Write事件处理"></a>Read/Write事件处理</h2><ul>
+<li>继承关系：NioProcessor -&gt; AbstractPollingIoProcessor</li>
+</ul>
+<h4 id="SimpleIoProcessorPool"><a href="#SimpleIoProcessorPool" class="headerlink" title="SimpleIoProcessorPool"></a>SimpleIoProcessorPool</h4><ul>
+<li>NioProcessor[]：Processor数组，默认大小为CPU核心数量+1；</li>
+</ul>
+<h4 id="NioProcessor"><a href="#NioProcessor" class="headerlink" title="NioProcessor"></a>NioProcessor</h4><ul>
+<li><p>selector</p>
+</li>
+<li><p>init()；打开selector；</p>
+</li>
+<li>select():调用selector的select();</li>
+<li>selectedSessions():返回selector.selectedKeys()方法；</li>
+<li>registerNewSelector():处理当程序掉入nio坑里时，将老selector中所有keys注册到新selector上面；</li>
+</ul>
+<h4 id="AbstractPollingIoProcessor"><a href="#AbstractPollingIoProcessor" class="headerlink" title="AbstractPollingIoProcessor"></a>AbstractPollingIoProcessor</h4><ul>
+<li><p>Processor -&gt; Runnable</p>
+</li>
+<li><p>add():将新session加入到Queue，随后检查如果第一次被调用的话则启动startupProcessor()方法执行Processor.run()；</p>
+</li>
+<li>Processor.run():执行select()，判断是否掉到nio坑里，随后处理newSession，初始化newSession并绑定Read/Write事件到selector;然后调用process开始处理活跃的session，再调用flush()，将需要发送的数据交给TCP</li>
+<li>process():遍历活跃的session集合调用process(session)处理每个session；</li>
+<li>process(session)：判断如果是可读状态的session则调用read(),如果可写状态则将session加入flushingSessions队列;</li>
+<li>read():将数据读取后调用IoFilterChain.fireMessageReceived方法，此时数据将通过Mina的filters处理数据，最终交给handler处理。</li>
+<li>flush():遍历flushingSession取出session，调用flushNow(session)，如果还有未发送的数据则需要调用scheduleFlush(session)，“//Kernel buffer is full.”;</li>
+<li>flushNow(session):取出session中的writeRequestQueue，发送队列里面的数据；</li>
+<li>scheduleFlush(session)：将session重新加入到flushingSession中；</li>
+</ul>
+<h2 id="session"><a href="#session" class="headerlink" title="session"></a>session</h2><p>NioSocketSession -&gt; NioSession -&gt; AbstractIoSession</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/09/io-mina-write-async/" class="archive-article-date">
-  	<time datetime="2015-02-09T14:45:10.000Z" itemprop="datePublished">Feb 9</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-io-mina-write-async" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/09/io-mina-write-async/" class="article-date">
+  	<time datetime="2015-02-09T14:45:10.000Z" itemprop="datePublished">2015-02-09</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/09/io-mina-write-async/">Mina-写异步实现</a>
+      <a class="article-title" href="/2015/02/09/io-mina-write-async/">Mina-写异步实现</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="u6458_u8981"><a href="#u6458_u8981" class="headerlink" title="摘要"></a>摘要</h2><p>异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。</p>
+<h2 id="u53D1_u9001_u6570_u636E_u65F6_u7684_u4EE3_u7801_u6D41_u7A0B"><a href="#u53D1_u9001_u6570_u636E_u65F6_u7684_u4EE3_u7801_u6D41_u7A0B" class="headerlink" title="发送数据时的代码流程"></a>发送数据时的代码流程</h2><p>调用session.write() -&gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&gt; 从TailFilter一直到HeadFilter，在HeadFilter中调用processor.write方法 -&gt; AbstractPollingIoProcessor.write:将session列入flushingSession当中，随后的IO线程将发送flushingSession中session的WriteRequestQueue所有WriteRequest。</p>
+<h2 id="WriteFuture"><a href="#WriteFuture" class="headerlink" title="WriteFuture"></a>WriteFuture</h2><p>因为是异步操作，所以Future是必不可少的，Mina提供了WriteFuture作为WriteRequest发送成功后的通知。WriteFuture被组合在WriteRequest当中，并在调用session.write()时返回。<br>DefaultWriteFuture -&gt; DefaultIoFuture</p>
+<p>WriteFuture阻塞：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public IoFuture await() throws InterruptedException &#123;</span><br><span class="line">    synchronized (lock) &#123;</span><br><span class="line">        <span class="keyword">while</span> (!ready) &#123;</span><br><span class="line">            waiters++;</span><br><span class="line">            try &#123;</span><br><span class="line">                // Wait <span class="keyword">for</span> a notify, or <span class="keyword">if</span> no notify is called,</span><br><span class="line">                // assume that we have a deadlock and <span class="built_in">exit</span> the </span><br><span class="line">                // loop to check <span class="keyword">for</span> a potential deadlock.</span><br><span class="line">                lock.wait(DEAD_LOCK_CHECK_INTERVAL);</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line">                waiters--;</span><br><span class="line">                <span class="keyword">if</span> (!ready) &#123;</span><br><span class="line">                    checkDeadLock();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> this;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当IO线程将WriteRequest发送完成时，调用filterChain的fireMessageSent()，唤醒等待的线程。<br>WriteFuture释放：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void <span class="built_in">set</span>Value(Object newValue) &#123;</span><br><span class="line">    synchronized (lock) &#123;</span><br><span class="line">        // Allow only once.</span><br><span class="line">        <span class="keyword">if</span> (ready) &#123;</span><br><span class="line">            <span class="built_in">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        result = newValue;</span><br><span class="line">        ready = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (waiters &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            lock.notifyAll();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    notifyListeners();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/08/io-mina-filter-chain/" class="archive-article-date">
-  	<time datetime="2015-02-08T08:55:42.000Z" itemprop="datePublished">Feb 8</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-io-mina-filter-chain" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/08/io-mina-filter-chain/" class="article-date">
+  	<time datetime="2015-02-08T08:55:42.000Z" itemprop="datePublished">2015-02-08</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/08/io-mina-filter-chain/">Mina之责任链模式实现</a>
+      <a class="article-title" href="/2015/02/08/io-mina-filter-chain/">Mina之责任链模式实现</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="u6570_u636E_u7ED3_u6784"><a href="#u6570_u636E_u7ED3_u6784" class="headerlink" title="数据结构"></a>数据结构</h2><h4 id="DefaultIoFilterChain"><a href="#DefaultIoFilterChain" class="headerlink" title="DefaultIoFilterChain"></a>DefaultIoFilterChain</h4><ul>
+<li>EntryImpl head;</li>
+<li>EntryImpl tail;</li>
+</ul>
+<p>Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。</p>
+<h4 id="EntryImpl"><a href="#EntryImpl" class="headerlink" title="EntryImpl"></a>EntryImpl</h4><ul>
+<li>IoFilter filter;</li>
+<li>EntryImpl prevEntry;</li>
+<li>EntryImpl nextEntry;</li>
+<li>NextFilter nextFilter;</li>
+</ul>
+<p>EntryImpl是IoFilter的包装，还提供了前后节点的链接。需要关注的是NextFilter类，由于责任链的两端都可能触发事件，不同事件在链中的传递方向不同，所以IoFilter的实现需要根据不同的事件来判断下一个需要接收事件的Entry是在哪个方向，而Nextfilter正是将这部分逻辑从filter中分离出来，Nextfilter中包含了双向链表中两个方向所有可能发生的事件类型，这样IoFilter只需要根据不同事件调用NextFilter中不同方法即可。</p>
+<h4 id="IoFilter"><a href="#IoFilter" class="headerlink" title="IoFilter"></a>IoFilter</h4><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
+<h2 id="u65B9_u5411"><a href="#u65B9_u5411" class="headerlink" title="方向"></a>方向</h2><ul>
+<li>write: tail -&gt; head、previous</li>
+<li>receive: head -&gt; tail、next</li>
+</ul>
+<h2 id="u673A_u5236"><a href="#u673A_u5236" class="headerlink" title="机制"></a>机制</h2>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/06/io-tcp-points/" class="archive-article-date">
-  	<time datetime="2015-02-06T11:24:09.000Z" itemprop="datePublished">Feb 6</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-io-tcp-points" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/06/io-tcp-points/" class="article-date">
+  	<time datetime="2015-02-06T11:24:09.000Z" itemprop="datePublished">2015-02-06</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/06/io-tcp-points/">TCP的那些事</a>
+      <a class="article-title" href="/2015/02/06/io-tcp-points/">TCP的那些事</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="u5EF6_u8FDFack"><a href="#u5EF6_u8FDFack" class="headerlink" title="延迟ack"></a>延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
+<p>至于延迟ack的意义，除了上文提到的可以提高ack的传输效率，还可以进行“捎带”操作。</p>
+<p>延迟ack似乎也只是在正常情况下才会使用，那什么情况下接收方不会累计确认而会立即响应ack呢？看一下ack的发送时机:</p>
+<ul>
+<li>首先，延迟的ack，当收到第一个数据包并等待第二个数据包传输时，等待超过50ms则立即发送ack</li>
+<li>其次，累积确认的ack，第一次收到的数据包未响应ack，第二次收到数据包时则立即发送ack</li>
+<li>发现有失序到达的数据包时，立即响应冗余ack</li>
+<li>发现有比失序到达的数据包序号更小的数据包时，立即响应ack</li>
+</ul>
+<h2 id="u62E5_u585E_u63A7_u5236"><a href="#u62E5_u585E_u63A7_u5236" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><ul>
+<li>CongWin：拥塞窗口大小，已经发送但还未收到ack的数据包数量；</li>
+<li>慢启动：当tcp开始传输时CongWin大小为1，每收到一个ack后CongWin++,即每过一个RTT之后CongWin = CongWin*2；</li>
+<li>拥塞避免：当速率到达某个值(slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTTCongWin++；</li>
+<li>超时丢包：当发生超时丢包时，TCP认为情况太糟糕，反应很强烈，CongWin = 1，ssthresh = CongWin/2，重新进入慢启动过程。</li>
+<li>收到3个冗余ack丢包：当发送方收到3个冗余ack时，CongWin = CongWin/2，ssthresh = CongWin，进入拥塞避免；</li>
+<li>快速恢复：当发生超时丢包后又收到了3个冗余ack，那么TCP认为网络情况还没有之认为的那么严重，随机进入拥塞避免，即CongWin恢复为丢包时的一半，ssthresh恢复为丢包时的CongWin值。</li>
+</ul>
+<h2 id="u72B6_u6001_u6C47_u603B"><a href="#u72B6_u6001_u6C47_u603B" class="headerlink" title="状态汇总"></a>状态汇总</h2><ul>
+<li>closed</li>
+<li>listen</li>
+<li>syn_sent</li>
+<li>syn_rcvd</li>
+<li>established</li>
+<li>close_wait：接收到FIN并响应ack后进入close_wait状态，此状态时如果还有未发送完成的数据则可以继续发送</li>
+<li>last_ack：close_wait状态中发送fin报文之后进入last_ack状态</li>
+<li>fin_wait_1：主动发送fin报文之后进入fin_wait_1状态，等待ack返回</li>
+<li>fin_wait_2：收到ack后等待对方发送fin报文，此时可能还有数据包到达</li>
+<li>time_wait：收到fin报文并响应ack后进入time_wait状态，time_wait状态将持续MSL ×　2的时间，主要出于两个原因:1.尽力确保最后的ack送达，如果ack超时，对方会重发fin，要等待fin以及ack两个报文的线路存在时间，所以需要*2；2.确保本链接关闭时不会影响后面新建立的连接，如果没有time_wait状态而直接关闭并且马上在同样的端口号又重建了一个连接，而最后发送的ack又超时，对方重发fin，这又将新建立的连接关闭了。</li>
+<li>closing：此状态相对比较特殊，主动发送fin后，没有收到ack却收到了fin（双方同时关闭连接），此时响应ack并进入closing状态，随后当收到ack时进入time_wait状态</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/04/java-concurrent-aqs/" class="archive-article-date">
-  	<time datetime="2015-02-04T03:02:59.000Z" itemprop="datePublished">Feb 4</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-java-concurrent-aqs" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/04/java-concurrent-aqs/" class="article-date">
+  	<time datetime="2015-02-04T03:02:59.000Z" itemprop="datePublished">2015-02-04</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/04/java-concurrent-aqs/">Java并发——AQS</a>
+      <a class="article-title" href="/2015/02/04/java-concurrent-aqs/">Java并发——AQS</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="u6458_u8981"><a href="#u6458_u8981" class="headerlink" title="摘要"></a>摘要</h2>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/java/">java</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
+    
   </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2015/02/03/java-gc/" class="archive-article-date">
-  	<time datetime="2015-02-03T10:52:34.000Z" itemprop="datePublished">Feb 3</time>
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-java-gc" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/03/java-gc/" class="article-date">
+  	<time datetime="2015-02-03T10:52:34.000Z" itemprop="datePublished">2015-02-03</time>
 </a>
-        </div>
-    	 
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/02/03/java-gc/">Java垃圾回收</a>
+      <a class="article-title" href="/2015/02/03/java-gc/">Java垃圾回收</a>
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="u6982_u5FF5"><a href="#u6982_u5FF5" class="headerlink" title="概念"></a>概念</h2><h4 id="u5185_u5B58_u56DE_u6536"><a href="#u5185_u5B58_u56DE_u6536" class="headerlink" title="内存回收"></a>内存回收</h4><p>因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。</p>
+<h4 id="u5206_u4EE3"><a href="#u5206_u4EE3" class="headerlink" title="分代"></a>分代</h4><p>正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简单的方式是提高回收线程的执行频率，但是这将导致性能问题，对象的生命周期内将被检查多次，生命周期长的对象将被无谓的多次被检查。为了权衡两者的关系，这才催生了另一个概念：分代，不同生命周期的对象分别放在不同的区域，不同区域的回收频率不同，这大大提高系统效率。</p>
+<h4 id="u5783_u573E_u56DE_u6536_u7B97_u6CD5"><a href="#u5783_u573E_u56DE_u6536_u7B97_u6CD5" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h4><ul>
+<li>年轻代算法：标记复制。因为年轻代的垃圾回收频率高，年轻代的回收时间应该越短越好，所以年轻代以空间换时间，使用标记复制算法。</li>
+<li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
+</ul>
+<h2 id="u5783_u573E_u56DE_u6536_u5668"><a href="#u5783_u573E_u56DE_u6536_u5668" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><h4 id="u5E74_u8F7B_u4EE3"><a href="#u5E74_u8F7B_u4EE3" class="headerlink" title="年轻代"></a>年轻代</h4><h4 id="u5E74_u8001_u4EE3"><a href="#u5E74_u8001_u4EE3" class="headerlink" title="年老代"></a>年老代</h4><h4 id="u7EC4_u5408_u65B9_u5F0F"><a href="#u7EC4_u5408_u65B9_u5F0F" class="headerlink" title="组合方式"></a>组合方式</h4><h2 id="u91CD_u70B9_u4ECB_u7ECDCMS"><a href="#u91CD_u70B9_u4ECB_u7ECDCMS" class="headerlink" title="重点介绍CMS"></a>重点介绍CMS</h2><p>CMS有何缺点？</p>
+<ul>
+<li>减小吞吐量</li>
+<li>造成浮动垃圾，增加了碎片问题负担</li>
+</ul>
+<p>CMS模式下何时会触发FullGC？</p>
+<ul>
+<li>Concurrent-mode-failure：空间问题；Promotion-mode-failure：碎片问题</li>
+<li>持久代满，且未启用 CMSClassUnloadingEnabled</li>
+<li>显式调用System.gc，且未启用ExplicitGCInvokesConcurrent</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/java/">java</a>
 	</div>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
+      
+      <div class="clearfix"></div>
+    </div>
     
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+  
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
-
 </div>
       <footer id="footer">
   <div class="outer">
@@ -490,9 +892,9 @@
 		fancybox: true,
 		mathjax: true,
 		animate: true,
-		isHome: false,
+		isHome: true,
 		isPost: false,
-		isArchive: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false

@@ -3,10 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-<<<<<<< HEAD
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
   <title>RPC框架-Dubbo | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它
@@ -45,10 +42,7 @@
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
-<<<<<<< HEAD
 
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <body>
   <div id="container">
     <div class="left-col">
@@ -113,10 +107,7 @@
 		</div>
 	</header>				
 </div>
-<<<<<<< HEAD
 
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
     </div>
     <div class="mid-col">
       <nav id="mobile-nav">
@@ -127,13 +118,9 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
-<<<<<<< HEAD
 			
 				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
 			
-=======
-				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 			</div>
 			<hgroup>
 			  <h1 class="header-author">Qun</h1>
@@ -167,10 +154,7 @@
 		</header>				
 	</div>
 </nav>
-<<<<<<< HEAD
 
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
       <div class="body-wrap"><article id="post-distributed-rpc-dubbo" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -208,23 +192,14 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-<<<<<<< HEAD
         <h2 id="Dubbo_u7B80_u4ECB"><a href="#Dubbo_u7B80_u4ECB" class="headerlink" title="Dubbo简介"></a>Dubbo简介</h2><p>dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它</p>
-=======
-        <h2 id="Dubbo简介">Dubbo简介</h2><p>dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它</p>
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <ul>
 <li>足够健壮，有多年生产环境实践经验；</li>
 <li>足够开放，它所依赖的都是开源且流行的组件；</li>
 <li>足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。</li>
 </ul>
-<<<<<<< HEAD
 <h2 id="u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE"><a href="#u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE" class="headerlink" title="关于Dubbo的默认协议"></a>关于Dubbo的默认协议</h2><p>Dubbo的默认协议即Dubbo协议，它使用单TCP链接的Hessian序列化协议，Hessian虽然性能不及ProtocolBuffer、Thrift，但其不需要中间解释文件，相对灵活，对于一般公司来说已经足够。至于单链接也许会存在争议，有人可能会说单链接存在带宽问题，其实如果不是某个请求发送大文件，业务之间不会相互影响，而且性能略好，但是如果网络环境较差再加上业务量陡增的话就悲催了。</p>
 <h2 id="u67B6_u6784_u7B80_u6790"><a href="#u67B6_u6784_u7B80_u6790" class="headerlink" title="架构简析"></a>架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
-=======
-<h2 id="关于Dubbo的默认协议">关于Dubbo的默认协议</h2><p>Dubbo的默认协议即Dubbo协议，它使用单TCP链接的Hessian序列化协议，Hessian虽然性能不及ProtocolBuffer、Thrift，但其不需要中间解释文件，相对灵活，对于一般公司来说已经足够。至于单链接也许会存在争议，有人可能会说单链接存在带宽问题，其实如果不是某个请求发送大文件，业务之间不会相互影响，而且性能略好，但是如果网络环境较差再加上业务量陡增的话就悲催了。</p>
-<h2 id="架构简析">架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <ul>
 <li>从架构角度来说，Dubbo为Netty、Mina、Jetty等组件以及Hessian、Thrift等协议提供了平台，即Netty等提供数据传输功能，Hessian等提供协议功能，这样可以使各种方式灵活搭配以满足不同场景需要。</li>
 <li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码。</li>
@@ -259,24 +234,7 @@
 </article>
 
 
-<<<<<<< HEAD
 
-=======
-<div class="share">
-	<!-- JiaThis Button BEGIN -->
-	<div class="jiathis_style">
-		<span class="jiathis_txt">分享到：</span>
-		<a class="jiathis_button_tsina"></a>
-		<a class="jiathis_button_cqq"></a>
-		<a class="jiathis_button_douban"></a>
-		<a class="jiathis_button_weixin"></a>
-		<a class="jiathis_button_tumblr"></a>
-		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-	</div>
-	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
-	<!-- JiaThis Button END -->
-</div>
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
 
 
@@ -287,11 +245,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-<<<<<<< HEAD
     		&copy; 2016 Qun
-=======
-    		&copy; 2015 Qun
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

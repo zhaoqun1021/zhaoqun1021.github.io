@@ -3,10 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-<<<<<<< HEAD
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
   <title>Java垃圾回收 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="概念内存回收因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。
@@ -30,10 +27,7 @@
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
-<<<<<<< HEAD
 
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <body>
   <div id="container">
     <div class="left-col">
@@ -98,10 +92,7 @@
 		</div>
 	</header>				
 </div>
-<<<<<<< HEAD
 
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
     </div>
     <div class="mid-col">
       <nav id="mobile-nav">
@@ -112,13 +103,9 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
-<<<<<<< HEAD
 			
 				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
 			
-=======
-				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 			</div>
 			<hgroup>
 			  <h1 class="header-author">Qun</h1>
@@ -152,10 +139,7 @@
 		</header>				
 	</div>
 </nav>
-<<<<<<< HEAD
 
-=======
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
       <div class="body-wrap"><article id="post-java-gc" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -193,7 +177,6 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-<<<<<<< HEAD
         <h2 id="u6982_u5FF5"><a href="#u6982_u5FF5" class="headerlink" title="概念"></a>概念</h2><h4 id="u5185_u5B58_u56DE_u6536"><a href="#u5185_u5B58_u56DE_u6536" class="headerlink" title="内存回收"></a>内存回收</h4><p>因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。</p>
 <h4 id="u5206_u4EE3"><a href="#u5206_u4EE3" class="headerlink" title="分代"></a>分代</h4><p>正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简单的方式是提高回收线程的执行频率，但是这将导致性能问题，对象的生命周期内将被检查多次，生命周期长的对象将被无谓的多次被检查。为了权衡两者的关系，这才催生了另一个概念：分代，不同生命周期的对象分别放在不同的区域，不同区域的回收频率不同，这大大提高系统效率。</p>
 <h4 id="u5783_u573E_u56DE_u6536_u7B97_u6CD5"><a href="#u5783_u573E_u56DE_u6536_u7B97_u6CD5" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h4><ul>
@@ -201,15 +184,6 @@
 <li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
 </ul>
 <h2 id="u5783_u573E_u56DE_u6536_u5668"><a href="#u5783_u573E_u56DE_u6536_u5668" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><h4 id="u5E74_u8F7B_u4EE3"><a href="#u5E74_u8F7B_u4EE3" class="headerlink" title="年轻代"></a>年轻代</h4><h4 id="u5E74_u8001_u4EE3"><a href="#u5E74_u8001_u4EE3" class="headerlink" title="年老代"></a>年老代</h4><h4 id="u7EC4_u5408_u65B9_u5F0F"><a href="#u7EC4_u5408_u65B9_u5F0F" class="headerlink" title="组合方式"></a>组合方式</h4><h2 id="u91CD_u70B9_u4ECB_u7ECDCMS"><a href="#u91CD_u70B9_u4ECB_u7ECDCMS" class="headerlink" title="重点介绍CMS"></a>重点介绍CMS</h2><p>CMS有何缺点？</p>
-=======
-        <h2 id="概念">概念</h2><h4 id="内存回收">内存回收</h4><p>因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。</p>
-<h4 id="分代">分代</h4><p>正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简单的方式是提高回收线程的执行频率，但是这将导致性能问题，对象的生命周期内将被检查多次，生命周期长的对象将被无谓的多次被检查。为了权衡两者的关系，这才催生了另一个概念：分代，不同生命周期的对象分别放在不同的区域，不同区域的回收频率不同，这大大提高系统效率。</p>
-<h4 id="垃圾回收算法">垃圾回收算法</h4><ul>
-<li>年轻代算法：标记复制。因为年轻代的垃圾回收频率高，年轻代的回收时间应该越短越好，所以年轻代以空间换时间，使用标记复制算法。</li>
-<li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
-</ul>
-<h2 id="垃圾回收器">垃圾回收器</h2><h4 id="年轻代">年轻代</h4><h4 id="年老代">年老代</h4><h4 id="组合方式">组合方式</h4><h2 id="重点介绍CMS">重点介绍CMS</h2><p>CMS有何缺点？</p>
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <ul>
 <li>减小吞吐量</li>
 <li>造成浮动垃圾，增加了碎片问题负担</li>
@@ -250,24 +224,7 @@
 </article>
 
 
-<<<<<<< HEAD
 
-=======
-<div class="share">
-	<!-- JiaThis Button BEGIN -->
-	<div class="jiathis_style">
-		<span class="jiathis_txt">分享到：</span>
-		<a class="jiathis_button_tsina"></a>
-		<a class="jiathis_button_cqq"></a>
-		<a class="jiathis_button_douban"></a>
-		<a class="jiathis_button_weixin"></a>
-		<a class="jiathis_button_tumblr"></a>
-		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-	</div>
-	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
-	<!-- JiaThis Button END -->
-</div>
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
 
 
@@ -278,11 +235,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-<<<<<<< HEAD
     		&copy; 2016 Qun
-=======
-    		&copy; 2015 Qun
->>>>>>> d4b35f9adbe533aed193969b455503db21240116
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
