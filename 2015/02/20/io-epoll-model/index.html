@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Epoll模型 | Zhao Qun&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="epoll提供的接口epoll提供了3个系统调用
+
+epoll_create；创建一个epoll
+epoll_ctl：将文件句柄添加到epol中，并注册相关事件到文件句柄
+epoll_wait：返回活跃文件句柄
+
+实现机制主要数据结构
+句柄树：为方便查找，epoll使用二叉树存储所有句柄；
+句柄数组：epoll在用户空间创建句柄数组，用来存放当前活跃句柄。
+
+流程
+当句柄状态发生变化时会主动将句柄">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Epoll模型">
+<meta property="og:url" content="http://yoursite.com/2015/02/20/io-epoll-model/index.html">
+<meta property="og:site_name" content="Zhao Qun's blog">
+<meta property="og:description" content="epoll提供的接口epoll提供了3个系统调用
+
+epoll_create；创建一个epoll
+epoll_ctl：将文件句柄添加到epol中，并注册相关事件到文件句柄
+epoll_wait：返回活跃文件句柄
+
+实现机制主要数据结构
+句柄树：为方便查找，epoll使用二叉树存储所有句柄；
+句柄数组：epoll在用户空间创建句柄数组，用来存放当前活跃句柄。
+
+流程
+当句柄状态发生变化时会主动将句柄">
+<meta property="og:updated_time" content="2015-10-12T09:51:07.246Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Epoll模型">
+<meta name="twitter:description" content="epoll提供的接口epoll提供了3个系统调用
+
+epoll_create；创建一个epoll
+epoll_ctl：将文件句柄添加到epol中，并注册相关事件到文件句柄
+epoll_wait：返回活跃文件句柄
+
+实现机制主要数据结构
+句柄树：为方便查找，epoll使用二叉树存储所有句柄；
+句柄数组：epoll在用户空间创建句柄数组，用来存放当前活跃句柄。
+
+流程
+当句柄状态发生变化时会主动将句柄">
+  
+    <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Qun</a></h1>
+		</hgroup>
+
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/java">JAVA</a></li>
+				        
+							<li><a href="/io">IO</a></li>
+				        
+							<li><a href="/mysql">Mysql</a></li>
+				        
+							<li><a href="/monitor">监控</a></li>
+				        
+							<li><a href="/distributed">分布式系统</a></li>
+				        
+							<li><a href="/cc">CC</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">要么精彩，要么死</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Qun</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Qun</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/java">JAVA</a></li>
+		        
+					<li><a href="/io">IO</a></li>
+		        
+					<li><a href="/mysql">Mysql</a></li>
+		        
+					<li><a href="/monitor">监控</a></li>
+		        
+					<li><a href="/distributed">分布式系统</a></li>
+		        
+					<li><a href="/cc">CC</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-io-epoll-model" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/20/io-epoll-model/" class="article-date">
+  	<time datetime="2015-02-20T03:25:16.000Z" itemprop="datePublished">2015-02-20</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Epoll模型
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="epoll_u63D0_u4F9B_u7684_u63A5_u53E3"><a href="#epoll_u63D0_u4F9B_u7684_u63A5_u53E3" class="headerlink" title="epoll提供的接口"></a>epoll提供的接口</h2><p>epoll提供了3个系统调用</p>
+<ul>
+<li>epoll_create；创建一个epoll</li>
+<li>epoll_ctl：将文件句柄添加到epol中，并注册相关事件到文件句柄</li>
+<li>epoll_wait：返回活跃文件句柄</li>
+</ul>
+<h2 id="u5B9E_u73B0_u673A_u5236"><a href="#u5B9E_u73B0_u673A_u5236" class="headerlink" title="实现机制"></a>实现机制</h2><h4 id="u4E3B_u8981_u6570_u636E_u7ED3_u6784"><a href="#u4E3B_u8981_u6570_u636E_u7ED3_u6784" class="headerlink" title="主要数据结构"></a>主要数据结构</h4><ul>
+<li>句柄树：为方便查找，epoll使用二叉树存储所有句柄；</li>
+<li>句柄数组：epoll在用户空间创建句柄数组，用来存放当前活跃句柄。</li>
+</ul>
+<h4 id="u6D41_u7A0B"><a href="#u6D41_u7A0B" class="headerlink" title="流程"></a>流程</h4><ul>
+<li>当句柄状态发生变化时会主动将句柄添加到用户空间的句柄数组中；</li>
+<li>当调用epoll_wait时，epoll返回句柄数组的内存地址，用户通过内存地址就可以获取当前活跃的句柄信息。</li>
+</ul>
+<h2 id="ET_u4E0ELT_u6A21_u5F0F"><a href="#ET_u4E0ELT_u6A21_u5F0F" class="headerlink" title="ET与LT模式"></a>ET与LT模式</h2><p>ET:边缘触发、LT:水平触发<br>最初epoll只提供了ET模式，因为ET模式对于用户来说难以操作，才妥协推出了性能稍低LT模式，那就看一下两者的区别；</p>
+<h4 id="u533A_u522B"><a href="#u533A_u522B" class="headerlink" title="区别"></a>区别</h4><p>ET模式下，只有某个描述符的状态变为可用后（不可读变为可读/不可写变为可写），调用epoll_wait才会返回该描述符。LT模式下，只要当某个描述符处于某种状态时（可读/可写），每次调用epoll_wait都会返回该描述符；<br>当用户使用ET模式时，需要在两次epoll_wait调用之间将活跃的描述符一次性将数据读完，或者一次性将数据发完/填满,或者需要在用户代码中保存句柄状态。</p>
+<h4 id="u6027_u80FD_u5BF9_u6BD4"><a href="#u6027_u80FD_u5BF9_u6BD4" class="headerlink" title="性能对比"></a>性能对比</h4><p>从性能因素考虑，ET模式效率会高一些，因为活跃的描述符会存放在数组当中，LT模式下每当用户IO操作完成之后，要检查描述符的状态来确定是否删除数组中的描述符；而ET模式只要用户epoll_wait之后，扫过数组就会删除描述符;</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/02/21/distributed-rpc-dubbo/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          RPC框架-Dubbo
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/02/12/io-mina-io-thread-model/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Mina-IO线程模型</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 Qun
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

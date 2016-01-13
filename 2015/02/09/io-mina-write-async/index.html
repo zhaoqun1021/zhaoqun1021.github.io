@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Mina-写异步实现 | Zhao Qun&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
+发送数据时的代码流程调用session.write() -&amp;gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&amp;gt; 从TailFilt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mina-写异步实现">
+<meta property="og:url" content="http://yoursite.com/2015/02/09/io-mina-write-async/index.html">
+<meta property="og:site_name" content="Zhao Qun's blog">
+<meta property="og:description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
+发送数据时的代码流程调用session.write() -&amp;gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&amp;gt; 从TailFilt">
+<meta property="og:updated_time" content="2015-10-07T07:29:16.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mina-写异步实现">
+<meta name="twitter:description" content="摘要异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。
+发送数据时的代码流程调用session.write() -&amp;gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&amp;gt; 从TailFilt">
+  
+    <link rel="alternative" href="/atom.xml" title="Zhao Qun&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Qun</a></h1>
+		</hgroup>
+
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/java">JAVA</a></li>
+				        
+							<li><a href="/io">IO</a></li>
+				        
+							<li><a href="/mysql">Mysql</a></li>
+				        
+							<li><a href="/monitor">监控</a></li>
+				        
+							<li><a href="/distributed">分布式系统</a></li>
+				        
+							<li><a href="/cc">CC</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">要么精彩，要么死</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Qun</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Qun</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/java">JAVA</a></li>
+		        
+					<li><a href="/io">IO</a></li>
+		        
+					<li><a href="/mysql">Mysql</a></li>
+		        
+					<li><a href="/monitor">监控</a></li>
+		        
+					<li><a href="/distributed">分布式系统</a></li>
+		        
+					<li><a href="/cc">CC</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-io-mina-write-async" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/09/io-mina-write-async/" class="article-date">
+  	<time datetime="2015-02-09T14:45:10.000Z" itemprop="datePublished">2015-02-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mina-写异步实现
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/io/">io</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="u6458_u8981"><a href="#u6458_u8981" class="headerlink" title="摘要"></a>摘要</h2><p>异步Io是Mina等网络的框架的重要功能，它大大降低了用户操作网络IO的复杂度，这其中由于TCP的协议特点，通过TCP发送数据的异步实现更是尤为重要，本文就简述一下Mina写异步的代码实现。</p>
+<h2 id="u53D1_u9001_u6570_u636E_u65F6_u7684_u4EE3_u7801_u6D41_u7A0B"><a href="#u53D1_u9001_u6570_u636E_u65F6_u7684_u4EE3_u7801_u6D41_u7A0B" class="headerlink" title="发送数据时的代码流程"></a>发送数据时的代码流程</h2><p>调用session.write() -&gt; 调用session中的filterChain.fireFilterWrite(WriteRequest) -&gt; 从TailFilter一直到HeadFilter，在HeadFilter中调用processor.write方法 -&gt; AbstractPollingIoProcessor.write:将session列入flushingSession当中，随后的IO线程将发送flushingSession中session的WriteRequestQueue所有WriteRequest。</p>
+<h2 id="WriteFuture"><a href="#WriteFuture" class="headerlink" title="WriteFuture"></a>WriteFuture</h2><p>因为是异步操作，所以Future是必不可少的，Mina提供了WriteFuture作为WriteRequest发送成功后的通知。WriteFuture被组合在WriteRequest当中，并在调用session.write()时返回。<br>DefaultWriteFuture -&gt; DefaultIoFuture</p>
+<p>WriteFuture阻塞：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public IoFuture await() throws InterruptedException &#123;</span><br><span class="line">    synchronized (lock) &#123;</span><br><span class="line">        <span class="keyword">while</span> (!ready) &#123;</span><br><span class="line">            waiters++;</span><br><span class="line">            try &#123;</span><br><span class="line">                // Wait <span class="keyword">for</span> a notify, or <span class="keyword">if</span> no notify is called,</span><br><span class="line">                // assume that we have a deadlock and <span class="built_in">exit</span> the </span><br><span class="line">                // loop to check <span class="keyword">for</span> a potential deadlock.</span><br><span class="line">                lock.wait(DEAD_LOCK_CHECK_INTERVAL);</span><br><span class="line">            &#125; finally &#123;</span><br><span class="line">                waiters--;</span><br><span class="line">                <span class="keyword">if</span> (!ready) &#123;</span><br><span class="line">                    checkDeadLock();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> this;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当IO线程将WriteRequest发送完成时，调用filterChain的fireMessageSent()，唤醒等待的线程。<br>WriteFuture释放：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void <span class="built_in">set</span>Value(Object newValue) &#123;</span><br><span class="line">    synchronized (lock) &#123;</span><br><span class="line">        // Allow only once.</span><br><span class="line">        <span class="keyword">if</span> (ready) &#123;</span><br><span class="line">            <span class="built_in">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        result = newValue;</span><br><span class="line">        ready = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (waiters &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            lock.notifyAll();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    notifyListeners();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/02/12/io-mina-io-thread-model/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Mina-IO线程模型
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/02/08/io-mina-filter-chain/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Mina之责任链模式实现</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 Qun
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>
