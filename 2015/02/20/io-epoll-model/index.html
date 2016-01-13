@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   
+<<<<<<< HEAD
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
   <title>Epoll模型 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="epoll提供的接口epoll提供了3个系统调用
@@ -57,7 +60,10 @@ epoll_wait：返回活跃文件句柄
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <body>
   <div id="container">
     <div class="left-col">
@@ -122,7 +128,10 @@ epoll_wait：返回活跃文件句柄
 		</div>
 	</header>				
 </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     </div>
     <div class="mid-col">
       <nav id="mobile-nav">
@@ -133,9 +142,13 @@ epoll_wait：返回活跃文件句柄
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
+<<<<<<< HEAD
 			
 				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
 			
+=======
+				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 			</div>
 			<hgroup>
 			  <h1 class="header-author">Qun</h1>
@@ -169,7 +182,10 @@ epoll_wait：返回活跃文件句柄
 		</header>				
 	</div>
 </nav>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
       <div class="body-wrap"><article id="post-io-epoll-model" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -207,12 +223,17 @@ epoll_wait：返回活跃文件句柄
     
     <div class="article-entry" itemprop="articleBody">
       
+<<<<<<< HEAD
         <h2 id="epoll_u63D0_u4F9B_u7684_u63A5_u53E3"><a href="#epoll_u63D0_u4F9B_u7684_u63A5_u53E3" class="headerlink" title="epoll提供的接口"></a>epoll提供的接口</h2><p>epoll提供了3个系统调用</p>
+=======
+        <h2 id="epoll提供的接口">epoll提供的接口</h2><p>epoll提供了3个系统调用</p>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <ul>
 <li>epoll_create；创建一个epoll</li>
 <li>epoll_ctl：将文件句柄添加到epol中，并注册相关事件到文件句柄</li>
 <li>epoll_wait：返回活跃文件句柄</li>
 </ul>
+<<<<<<< HEAD
 <h2 id="u5B9E_u73B0_u673A_u5236"><a href="#u5B9E_u73B0_u673A_u5236" class="headerlink" title="实现机制"></a>实现机制</h2><h4 id="u4E3B_u8981_u6570_u636E_u7ED3_u6784"><a href="#u4E3B_u8981_u6570_u636E_u7ED3_u6784" class="headerlink" title="主要数据结构"></a>主要数据结构</h4><ul>
 <li>句柄树：为方便查找，epoll使用二叉树存储所有句柄；</li>
 <li>句柄数组：epoll在用户空间创建句柄数组，用来存放当前活跃句柄。</li>
@@ -224,6 +245,19 @@ epoll_wait：返回活跃文件句柄
 <h2 id="ET_u4E0ELT_u6A21_u5F0F"><a href="#ET_u4E0ELT_u6A21_u5F0F" class="headerlink" title="ET与LT模式"></a>ET与LT模式</h2><p>ET:边缘触发、LT:水平触发<br>最初epoll只提供了ET模式，因为ET模式对于用户来说难以操作，才妥协推出了性能稍低LT模式，那就看一下两者的区别；</p>
 <h4 id="u533A_u522B"><a href="#u533A_u522B" class="headerlink" title="区别"></a>区别</h4><p>ET模式下，只有某个描述符的状态变为可用后（不可读变为可读/不可写变为可写），调用epoll_wait才会返回该描述符。LT模式下，只要当某个描述符处于某种状态时（可读/可写），每次调用epoll_wait都会返回该描述符；<br>当用户使用ET模式时，需要在两次epoll_wait调用之间将活跃的描述符一次性将数据读完，或者一次性将数据发完/填满,或者需要在用户代码中保存句柄状态。</p>
 <h4 id="u6027_u80FD_u5BF9_u6BD4"><a href="#u6027_u80FD_u5BF9_u6BD4" class="headerlink" title="性能对比"></a>性能对比</h4><p>从性能因素考虑，ET模式效率会高一些，因为活跃的描述符会存放在数组当中，LT模式下每当用户IO操作完成之后，要检查描述符的状态来确定是否删除数组中的描述符；而ET模式只要用户epoll_wait之后，扫过数组就会删除描述符;</p>
+=======
+<h2 id="实现机制">实现机制</h2><h4 id="主要数据结构">主要数据结构</h4><ul>
+<li>句柄树：为方便查找，epoll使用二叉树存储所有句柄；</li>
+<li>句柄数组：epoll在用户空间创建句柄数组，用来存放当前活跃句柄。</li>
+</ul>
+<h4 id="流程">流程</h4><ul>
+<li>当句柄状态发生变化时会主动将句柄添加到用户空间的句柄数组中；</li>
+<li>当调用epoll_wait时，epoll返回句柄数组的内存地址，用户通过内存地址就可以获取当前活跃的句柄信息。</li>
+</ul>
+<h2 id="ET与LT模式">ET与LT模式</h2><p>ET:边缘触发、LT:水平触发<br>最初epoll只提供了ET模式，因为ET模式对于用户来说难以操作，才妥协推出了性能稍低LT模式，那就看一下两者的区别；</p>
+<h4 id="区别">区别</h4><p>ET模式下，只有某个描述符的状态变为可用后（不可读变为可读/不可写变为可写），调用epoll_wait才会返回该描述符。LT模式下，只要当某个描述符处于某种状态时（可读/可写），每次调用epoll_wait都会返回该描述符；<br>当用户使用ET模式时，需要在两次epoll_wait调用之间将活跃的描述符一次性将数据读完，或者一次性将数据发完/填满,或者需要在用户代码中保存句柄状态。</p>
+<h4 id="性能对比">性能对比</h4><p>从性能因素考虑，ET模式效率会高一些，因为活跃的描述符会存放在数组当中，LT模式下每当用户IO操作完成之后，要检查描述符的状态来确定是否删除数组中的描述符；而ET模式只要用户epoll_wait之后，扫过数组就会删除描述符;</p>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
       
     </div>
@@ -254,7 +288,24 @@ epoll_wait：返回活跃文件句柄
 </article>
 
 
+<<<<<<< HEAD
 
+=======
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
 
 
@@ -265,7 +316,11 @@ epoll_wait：返回活跃文件句柄
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
+<<<<<<< HEAD
     		&copy; 2016 Qun
+=======
+    		&copy; 2015 Qun
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

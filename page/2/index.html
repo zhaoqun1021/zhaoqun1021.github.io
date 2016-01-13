@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>Zhao Qun&#39;s blog</title>
+  <title>Archives | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
@@ -138,604 +138,265 @@
 
       <div class="body-wrap">
   
-    <article id="post-java-gc" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a href="/2015/02/03/java-gc/" class="article-date">
-  	<time datetime="2015-02-03T10:52:34.000Z" itemprop="datePublished">2015-02-03</time>
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2015" class="archive-year">2015</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/31/java-javassist/" class="archive-article-date">
+  	<time datetime="2015-01-31T07:23:04.000Z" itemprop="datePublished">Jan 31</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/03/java-gc/">Java垃圾回收</a>
+      <a class="archive-article-title" href="/2015/01/31/java-javassist/">java-javassist</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u6982_u5FF5"><a href="#u6982_u5FF5" class="headerlink" title="概念"></a>概念</h2><h4 id="u5185_u5B58_u56DE_u6536"><a href="#u5185_u5B58_u56DE_u6536" class="headerlink" title="内存回收"></a>内存回收</h4><p>因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。</p>
-<h4 id="u5206_u4EE3"><a href="#u5206_u4EE3" class="headerlink" title="分代"></a>分代</h4><p>正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简单的方式是提高回收线程的执行频率，但是这将导致性能问题，对象的生命周期内将被检查多次，生命周期长的对象将被无谓的多次被检查。为了权衡两者的关系，这才催生了另一个概念：分代，不同生命周期的对象分别放在不同的区域，不同区域的回收频率不同，这大大提高系统效率。</p>
-<h4 id="u5783_u573E_u56DE_u6536_u7B97_u6CD5"><a href="#u5783_u573E_u56DE_u6536_u7B97_u6CD5" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h4><ul>
-<li>年轻代算法：标记复制。因为年轻代的垃圾回收频率高，年轻代的回收时间应该越短越好，所以年轻代以空间换时间，使用标记复制算法。</li>
-<li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
-</ul>
-<h2 id="u5783_u573E_u56DE_u6536_u5668"><a href="#u5783_u573E_u56DE_u6536_u5668" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><h4 id="u5E74_u8F7B_u4EE3"><a href="#u5E74_u8F7B_u4EE3" class="headerlink" title="年轻代"></a>年轻代</h4><h4 id="u5E74_u8001_u4EE3"><a href="#u5E74_u8001_u4EE3" class="headerlink" title="年老代"></a>年老代</h4><h4 id="u7EC4_u5408_u65B9_u5F0F"><a href="#u7EC4_u5408_u65B9_u5F0F" class="headerlink" title="组合方式"></a>组合方式</h4><h2 id="u91CD_u70B9_u4ECB_u7ECDCMS"><a href="#u91CD_u70B9_u4ECB_u7ECDCMS" class="headerlink" title="重点介绍CMS"></a>重点介绍CMS</h2><p>CMS有何缺点？</p>
-<ul>
-<li>减小吞吐量</li>
-<li>造成浮动垃圾，增加了碎片问题负担</li>
-</ul>
-<p>CMS模式下何时会触发FullGC？</p>
-<ul>
-<li>Concurrent-mode-failure：空间问题；Promotion-mode-failure：碎片问题</li>
-<li>持久代满，且未启用 CMSClassUnloadingEnabled</li>
-<li>显式调用System.gc，且未启用ExplicitGCInvokesConcurrent</li>
-</ul>
+        <div class="article-info info-on-right">
+          
+          
 
-      
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
     
-    <div class="article-info article-info-index">
-      
-      
-      
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/30/java-class-load/" class="archive-article-date">
+  	<time datetime="2015-01-30T09:12:15.000Z" itemprop="datePublished">Jan 30</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2015/01/30/java-class-load/">Java类加载</a>
+    </h1>
+  
+
+        <div class="article-info info-on-right">
+          
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/java/">java</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
-
-
-
   
-    <article id="post-java-javassist" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/31/java-javassist/" class="article-date">
-  	<time datetime="2015-01-31T07:23:04.000Z" itemprop="datePublished">2015-01-31</time>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/29/mysql-install/" class="archive-article-date">
+  	<time datetime="2015-01-29T04:37:11.000Z" itemprop="datePublished">Jan 29</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/31/java-javassist/">java-javassist</a>
+      <a class="archive-article-title" href="/2015/01/29/mysql-install/">mysql-install</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
+        <div class="article-info info-on-right">
+          
+          
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
-
-
-
   
-    <article id="post-java-class-load" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/30/java-class-load/" class="article-date">
-  	<time datetime="2015-01-30T09:12:15.000Z" itemprop="datePublished">2015-01-30</time>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/25/mysql-threadpool/" class="archive-article-date">
+  	<time datetime="2015-01-25T09:52:08.000Z" itemprop="datePublished">Jan 25</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/30/java-class-load/">Java类加载</a>
+      <a class="archive-article-title" href="/2015/01/25/mysql-threadpool/">划时代的MySQL线程池</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="JVM_u7684_u4E09_u79CD_u52A0_u8F7D_u5668"><a href="#JVM_u7684_u4E09_u79CD_u52A0_u8F7D_u5668" class="headerlink" title="JVM的三种加载器"></a>JVM的三种加载器</h2><h4 id="u6839_u52A0_u8F7D_u5668"><a href="#u6839_u52A0_u8F7D_u5668" class="headerlink" title="根加载器"></a>根加载器</h4><ul>
-<li>加载lang包核心类、rt.jar</li>
-</ul>
-<h4 id="u6269_u5C55_u52A0_u8F7D_u5668"><a href="#u6269_u5C55_u52A0_u8F7D_u5668" class="headerlink" title="扩展加载器"></a>扩展加载器</h4><ul>
-<li>加载java.ext.dir目录下的jar包</li>
-</ul>
-<h4 id="u7CFB_u7EDF_u52A0_u8F7D_u5668"><a href="#u7CFB_u7EDF_u52A0_u8F7D_u5668" class="headerlink" title="系统加载器"></a>系统加载器</h4><ul>
-<li>加载java.class.path下jar包</li>
-</ul>
-<h2 id="u673A_u5236"><a href="#u673A_u5236" class="headerlink" title="机制"></a>机制</h2><p>除根加载器外，每个类加载器都有父加载器，当加载某个类时首先让父加载器（加载器链路）们尝试加载，如果父加载器们加载失败，则捕获异常并调用自己的findClass方法尝试加载。</p>
-<p>依赖顺序：自定义加载器-&gt;系统加载器-&gt;扩展加载器-&gt;根加载器。</p>
-<p>用户自定义加载器需要继承抽象类ClassLoad，创建自定义加载器时可以指定父加载器，默认的父加载器为系统加载器，如果指定为空则父加载器为根加载器。</p>
-<p>JVM运行过程中遇到了需要加载的类，由当前类的定义类加载器（加载当前类的加载器）来加载。</p>
-<h2 id="u547D_u540D_u7A7A_u95F4"><a href="#u547D_u540D_u7A7A_u95F4" class="headerlink" title="命名空间"></a>命名空间</h2><p>每个加载器都有自己的命名空间，命名空间由该加载器和所有父加载器加载的类构成的，可以理解为同一个类加载系统。同一个命名空间中，只存在一个名称及包名相同的Class实例，同一个命名空间内才允许类之间相互访问。</p>
-<p>JVM之所以使用父委托机制来实现类加载，主要出于安全考虑，在同一个加载器系统中不存在同一个类名、包名相同的类，一个同样类名、包名的类不会加载第二次，因此体系中已经被加载的系统类不会被恶意代码篡改。</p>
-<h2 id="u8FD0_u884C_u65F6_u5305"><a href="#u8FD0_u884C_u65F6_u5305" class="headerlink" title="运行时包"></a>运行时包</h2><p>定义：相同包名且由同一加载器加载的一部分类。</p>
-<p>如果有在同一加载器系统中包名相同但由不同类加载器加载的类，他们不在同一个运行时包，所以理论上不具有相同包的权限。</p>
-<p>运行时包的存在同样是出于安全考虑。</p>
-<h2 id="u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668"><a href="#u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668" class="headerlink" title="自定义加载器"></a>自定义加载器</h2><p>如何实现自定义加载器？</p>
-<p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
-<h2 id="JavaEE_u7684_u7C7B_u52A0_u8F7D"><a href="#JavaEE_u7684_u7C7B_u52A0_u8F7D" class="headerlink" title="JavaEE的类加载"></a>JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。avaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。</p>
-<p>JavaEE的 委派模型：<br><img src="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg" alt="JavaEE的类加载"></p>
-<h2 id="u7C7B_u52A0_u8F7D_u8FC7_u7A0B"><a href="#u7C7B_u52A0_u8F7D_u8FC7_u7A0B" class="headerlink" title="类加载过程"></a>类加载过程</h2><p>加载、连接、初始化：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmbxmee0j20lj088q3w.jpg" alt="类加载过程"></p>
-<p>连接阶段：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmaslm26j20lf086wff.jpg" alt="类加载过程"></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-mysql-install" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/29/mysql-install/" class="article-date">
-  	<time datetime="2015-01-29T04:37:11.000Z" itemprop="datePublished">2015-01-29</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/29/mysql-install/">mysql-install</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-mysql-threadpool" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/25/mysql-threadpool/" class="article-date">
-  	<time datetime="2015-01-25T09:52:08.000Z" itemprop="datePublished">2015-01-25</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/25/mysql-threadpool/">划时代的MySQL线程池</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u5386_u53F2_u80CC_u666F"><a href="#u5386_u53F2_u80CC_u666F" class="headerlink" title="历史背景"></a>历史背景</h2><p>当翻阅某些互联网公司的技术架构图时，可能会发现他们当中很多有一个共同的特点，那就是应用与数据库之间有一所谓的“数据代理层”（比如美团、58同城、早期的淘宝等），至于数据代理层存在的价值，一般都会谈到以下两点:</p>
-<ul>
-<li>分离数据操作。将许多复杂的数据操作分离到数据层实现（如：实施分库分表后访问路由、数据合并），降低业务层代码复杂度；</li>
-<li>降低MySQL连接数。由于数据层需要的机器数量远小于业务层，所以数据库连接数相对较小。尤其是对于业务量庞大，需要分库分表的系统，可能一个表被水平切分到成百上千台机器上，数量更庞大的应用服务器需要与每台MySQL连接，由此导致MySQL服务器的连接数是惊人的。</li>
-</ul>
-<p>然而为实现数据代理层所付出的代价也是相当可观的，不仅需要增加该层的硬件设施、增加人员维护，由于应用层与数据层之间的传输协议普遍性能不高，与MySQL自己的二进制专用协议相比，无论在序列化性能还是数据包大小都有较大差距，因此应用层需要付出更多的代价去与数据层交互。以上这些缺点对于具有海量业务的公司来说似乎不可容忍，有没有可以解决以上问题的方式呢，答案是肯定的。<br>首先了解一下淘宝的TDDL。</p>
-<h2 id="u6DD8_u5B9DTDDL"><a href="#u6DD8_u5B9DTDDL" class="headerlink" title="淘宝TDDL"></a>淘宝TDDL</h2><p>TDDL是淘宝应用于分库分表的项目，经过多个版本的发展，整合阿里另一个项目”CORBA”之后愈发强大。TDDL主要提供分库分表场景下动态访问路由、数据合并、流控等功能。因为TDDL在代码层面被项目依赖，依托”CORBA”强大的SQL解析能力，领域模型定位于数据库与JDBC之间，所以对业务代码无侵入，基本上实现了上文中数据层的第一个任务。</p>
-<p>可以说如果没有MySQL线程池的话，TDDL没有任何意义，因为在TDDL模式下，应用层需要直连数据库，对上文中数据层的第二个任务并不是TDDL的能力范围，需要借助线程池来解决MySQL海量连接问题。</p>
-<h2 id="MySQL_u7EBF_u7A0B_u6C60"><a href="#MySQL_u7EBF_u7A0B_u6C60" class="headerlink" title="MySQL线程池"></a>MySQL线程池</h2><p>数据库线程池并不是MySQL的独门绝技，在5.5时代MariaDB和PerconaDB就已经实现了线程池功能，MySQL在随后的5.6社区版本当中也加入了该功能。</p>
-<p>在MySQL5.6之前，线程模型比较简单，类似于Java的BIO模型，每个线程处理只能处理一个连接，每次MySQL请求的数据IO、业务响应都在同一个线程当中。如果集群庞大的分库分表场景下，MySQL将会产生大量的TCP连接，系统会耗费大量的时间用来做线程上下文切换、缓存换入换出以及资源竞争，如果并发量陡增（比如电商系统的秒杀场景），MySQL将直接无响应。</p>
-<p>MySQL通过线程池所实现的线程模型与当今主流IO系统的线程模型基本一致（如Mina、Netty、Tomcat、Nginx等），简要来说就是一部分线程负责网络数据包的IO（IO线程：负责在核心态内存与用户态内存间交换数据），它们每次接受SQL请求并将任务加入队列之后立即返回，另一部分线程负责响应请求（业务线程），不断从队列获取任务并执行。IO线程使用非阻塞模型（epoll），可以创建海量连接且保持性能稳定，由于与业务线程独立，当业务线程繁忙时不会影响IO响应。两部分线程之间有队列负责缓冲任务，保护数据库引擎不会在短时间内涌入太多任务，保证正常运行。</p>
-<h2 id="u7EBF_u7A0B_u6C60_u76F8_u5173_u53C2_u6570"><a href="#u7EBF_u7A0B_u6C60_u76F8_u5173_u53C2_u6570" class="headerlink" title="线程池相关参数"></a>线程池相关参数</h2><ul>
-<li>thread_handling:表示线程池模型。</li>
-<li>thread_pool_size:表示线程池的group个数，一般设置为当前CPU核心数目。理想情况下，一个group一个活跃的工作线程，达到充分利用CPU的目的。</li>
-<li>thread_pool_stall_limit:用于timer线程定期检查group是否“停滞”，参数表示检测的间隔。</li>
-<li>thread_pool_idle_timeout:当一个worker空闲一段时间后会自动退出，保证线程池中的工作线程在满足请求的情况下，保持比较低的水平。</li>
-<li>thread_pool_oversubscribe:该参数用于控制CPU核心上“超频”的线程数。这个参数设置值不含listen线程计数。</li>
-<li>threadpool_high_prio_mode:表示优先队列的模式。</li>
-</ul>
-<h2 id="u7EBF_u7A0B_u6C60_u5B9E_u73B0"><a href="#u7EBF_u7A0B_u6C60_u5B9E_u73B0" class="headerlink" title="线程池实现"></a>线程池实现</h2><p><img src="http://ww4.sinaimg.cn/mw690/414d7865gw1ewqokqbt2hj20o40cit9k.jpg" alt="线程池实现"><br>每一个绿色的方框代表一个group，group的数量由thread_pool_size参数决定。</p>
-<p>每个group包含一个普通队列和一个优先队列，包含一个listen线程和若干worker线程，两种线程间可以动态转换，worker线程数量由工作负载决定，同时也受thread_pool_oversubscribe参数影响。普通队列中的任务超过一定时间未被执行会被列入优先队列，而优先队列的任务会被优先执行。</p>
-<p>整个group组有一个timer监控线程。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
+        <div class="article-info info-on-right">
+          
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/mysql/">mysql</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
-
-
-
   
-    <article id="post-mysql-performance" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/20/mysql-performance/" class="article-date">
-  	<time datetime="2015-01-20T07:41:16.000Z" itemprop="datePublished">2015-01-20</time>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/20/mysql-performance/" class="archive-article-date">
+  	<time datetime="2015-01-20T07:41:16.000Z" itemprop="datePublished">Jan 20</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/20/mysql-performance/">MySQL性能优化</a>
+      <a class="archive-article-title" href="/2015/01/20/mysql-performance/">MySQL性能优化</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u6458_u8981"><a href="#u6458_u8981" class="headerlink" title="摘要"></a>摘要</h2><p>与其说性能优化，其实本质上来说是根据业务场景在数据一致性和性能之间做出权衡，以及根据硬件设置做相应适配。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
+        <div class="article-info info-on-right">
+          
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/mysql/">mysql</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
-
-
-
   
-    <article id="post-io-tcp-21st" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/19/io-tcp-21st/" class="article-date">
-  	<time datetime="2015-01-19T06:09:48.000Z" itemprop="datePublished">2015-01-19</time>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/19/io-tcp-21st/" class="archive-article-date">
+  	<time datetime="2015-01-19T06:09:48.000Z" itemprop="datePublished">Jan 19</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/19/io-tcp-21st/">21世纪的TCP</a>
+      <a class="archive-article-title" href="/2015/01/19/io-tcp-21st/">21世纪的TCP</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u5173_u4E8ETCP"><a href="#u5173_u4E8ETCP" class="headerlink" title="关于TCP"></a>关于TCP</h2><p>TCP有几十年的发展历史，可以算得上一门古老的学问，虽然它并不完美也不能解决所有问题，但是足够复杂，足够优雅。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然说古老，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。</p>
-<p>## </p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
+        <div class="article-info info-on-right">
+          
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/io/">io</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
-
-
-
   
-    <article id="post-mysql-index" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/17/mysql-index/" class="article-date">
-  	<time datetime="2015-01-17T14:32:26.000Z" itemprop="datePublished">2015-01-17</time>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/17/mysql-index/" class="archive-article-date">
+  	<time datetime="2015-01-17T14:32:26.000Z" itemprop="datePublished">Jan 17</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/17/mysql-index/">MYSQL索引</a>
+      <a class="archive-article-title" href="/2015/01/17/mysql-index/">MYSQL索引</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u4E3A_u4EC0_u4E48_u9700_u8981_u7D22_u5F15"><a href="#u4E3A_u4EC0_u4E48_u9700_u8981_u7D22_u5F15" class="headerlink" title="为什么需要索引"></a>为什么需要索引</h2><ul>
-<li>索引的顺序性</li>
-<li>快速查找、排序、分组</li>
-<li>减少扫表数量，避免创建临时表，将随机IO变为顺序IO</li>
-</ul>
-<h2 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B-Tree"></a>B-Tree</h2><h2 id="u805A_u7C07_u7D22_u5F15"><a href="#u805A_u7C07_u7D22_u5F15" class="headerlink" title="聚簇索引"></a>聚簇索引</h2><ul>
-<li>聚簇并不是一种单独的索引类型，而是一种存储方式：InnoDB的聚簇索引在同一个结构中保存了B-Tree索引和行数据，索引就是主键。而覆盖索引也是相同的模型。</li>
-</ul>
-<h2 id="u9AD8_u6027_u80FD_u7D22_u5F15"><a href="#u9AD8_u6027_u80FD_u7D22_u5F15" class="headerlink" title="高性能索引"></a>高性能索引</h2><ul>
-<li><p>三星级索引</p>
-<ul>
-<li>一星：要查找的记录放在一起</li>
-<li>二星：多列索引的顺序与查找条件顺序一致</li>
-<li>三星：覆盖索引</li>
-</ul>
-</li>
-<li><p>选择性</p>
-<ul>
-<li>定义：不重复的列数量与所有列数量的比值，最大值为1</li>
-<li>对于BLOG、TEXT、长varchar，虽然选择性很高，但mysql不允许如此大的字段，只能使用前缀索引</li>
-<li>正常情况下，多列索引应该将选择性高的列放到前面</li>
-</ul>
-</li>
-<li><p>什么情况下无法使用索引</p>
-</li>
-</ul>
-<h2 id="u7D22_u5F15_u4F7F_u7528_u6848_u4F8B"><a href="#u7D22_u5F15_u4F7F_u7528_u6848_u4F8B" class="headerlink" title="索引使用案例"></a>索引使用案例</h2><h2 id="SQL_u5206_u6790"><a href="#SQL_u5206_u6790" class="headerlink" title="SQL分析"></a>SQL分析</h2>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
+        <div class="article-info info-on-right">
+          
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/mysql/">mysql</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
-
-
-
   
-    <article id="post-cc-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/14/cc-hello-world/" class="article-date">
-  	<time datetime="2015-01-14T14:41:58.000Z" itemprop="datePublished">2015-01-14</time>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2015/01/14/cc-hello-world/" class="archive-article-date">
+  	<time datetime="2015-01-14T14:41:58.000Z" itemprop="datePublished">Jan 14</time>
 </a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/14/cc-hello-world/">你好，色彩</a>
+      <a class="archive-article-title" href="/2015/01/14/cc-hello-world/">你好，色彩</a>
     </h1>
   
 
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Hello_World"><a href="#Hello_World" class="headerlink" title="Hello World"></a>Hello World</h2><p>新博客：GitHub + Hexo</p>
-<h2 id="u5B89_u88C5Node-js_u3001Git"><a href="#u5B89_u88C5Node-js_u3001Git" class="headerlink" title="安装Node.js、Git"></a>安装Node.js、Git</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Node.js</span><br><span class="line">&amp;</span><br><span class="line">Git</span><br></pre></td></tr></table></figure>
-<h2 id="u914D_u7F6EGtiHub"><a href="#u914D_u7F6EGtiHub" class="headerlink" title="配置GtiHub"></a>配置GtiHub</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">生成密钥：ssh-keygen -t rsa -C <span class="string">"911@zhaoqun911.cn"</span></span><br><span class="line"></span><br><span class="line">将公钥配置到GitHub： Account Settings—-&gt;SSH Public keys —-&gt; add another public keys（C:\Users\xx\.ssh\id_rsa.pub）</span><br><span class="line"></span><br><span class="line">测试：ssh -T git@github.com</span><br><span class="line"></span><br><span class="line">设置用户信息：git config --global user.name <span class="string">"xx"</span>； git config --global user.email  <span class="string">"xx"</span></span><br></pre></td></tr></table></figure>
-<h2 id="u5B89_u88C5_u3001_u914D_u7F6Ehexo"><a href="#u5B89_u88C5_u3001_u914D_u7F6Ehexo" class="headerlink" title="安装、配置hexo"></a>安装、配置hexo</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line"></span><br><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> theme</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:litten/hexo-theme-yilia yilia</span><br><span class="line"></span><br><span class="line">修改配置文件:theme:yilia</span><br><span class="line"></span><br><span class="line">hexo g</span><br><span class="line"></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-<h2 id="u53D1_u5E03"><a href="#u53D1_u5E03" class="headerlink" title="发布"></a>发布</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> public</span><br><span class="line"></span><br><span class="line">git init</span><br><span class="line"></span><br><span class="line">git remote blog add git@git.com:zhaoqun1021/zhaoqun1021.github.io</span><br><span class="line"></span><br><span class="line">将所有文件备份</span><br><span class="line"></span><br><span class="line">git pull blog master</span><br><span class="line"></span><br><span class="line">将备份的文件再覆盖回来</span><br><span class="line"></span><br><span class="line">git add *</span><br><span class="line"></span><br><span class="line">git commit -m <span class="string">'cc'</span></span><br><span class="line"></span><br><span class="line">git push blog master</span><br></pre></td></tr></table></figure>
-<h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">_config.yml:</span><br><span class="line">	archive_dir：归档位置？ </span><br><span class="line">	category_dir:分类URL名称？</span><br><span class="line"></span><br><span class="line">主题：</span><br><span class="line">	hexo-theme-yilia</span><br><span class="line"></span><br><span class="line">编辑器:</span><br><span class="line">    sublime + MarkdownEditing + MarkdownPreview</span><br><span class="line">    http://www.jianshu.com/p/<span class="number">378338</span>f10263</span><br><span class="line">    插件：</span><br><span class="line">        package install</span><br><span class="line">        imesurpport</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
+        <div class="article-info info-on-right">
+          
+          
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/cc/">cc</a>
 	</div>
 
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
-  
 </article>
-
-
-
-
-
-
-
-
-
   
   
+    </div></section>
+  
+
+    
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
     </nav>
   
+
 </div>
       <footer id="footer">
   <div class="outer">
@@ -759,9 +420,9 @@
 		fancybox: true,
 		mathjax: true,
 		animate: true,
-		isHome: true,
+		isHome: false,
 		isPost: false,
-		isArchive: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false

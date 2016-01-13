@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   
+<<<<<<< HEAD
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
   <title>Mina-IO线程模型 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Accept事件处理
@@ -51,7 +54,10 @@ sele">
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <body>
   <div id="container">
     <div class="left-col">
@@ -116,7 +122,10 @@ sele">
 		</div>
 	</header>				
 </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     </div>
     <div class="mid-col">
       <nav id="mobile-nav">
@@ -127,9 +136,13 @@ sele">
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
+<<<<<<< HEAD
 			
 				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
 			
+=======
+				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 			</div>
 			<hgroup>
 			  <h1 class="header-author">Qun</h1>
@@ -163,7 +176,10 @@ sele">
 		</header>				
 	</div>
 </nav>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
       <div class="body-wrap"><article id="post-io-mina-io-thread-model" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -201,10 +217,17 @@ sele">
     
     <div class="article-entry" itemprop="articleBody">
       
+<<<<<<< HEAD
         <h2 id="Accept_u4E8B_u4EF6_u5904_u7406"><a href="#Accept_u4E8B_u4EF6_u5904_u7406" class="headerlink" title="Accept事件处理"></a>Accept事件处理</h2><ul>
 <li>继承关系：NioSocketAcceptor -&gt; AbstractPollingIoAcceptor -&gt; AbstractIoAcceptor -&gt; AbstractIoService</li>
 </ul>
 <h4 id="NioSocketAcceptor"><a href="#NioSocketAcceptor" class="headerlink" title="NioSocketAcceptor"></a>NioSocketAcceptor</h4><ul>
+=======
+        <h2 id="Accept事件处理">Accept事件处理</h2><ul>
+<li>继承关系：NioSocketAcceptor -&gt; AbstractPollingIoAcceptor -&gt; AbstractIoAcceptor -&gt; AbstractIoService</li>
+</ul>
+<h4 id="NioSocketAcceptor">NioSocketAcceptor</h4><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li><p>selector</p>
 </li>
 <li><p>init():初始化NIO.selector</p>
@@ -212,7 +235,11 @@ sele">
 <li>open():将Accept事件注册到selector</li>
 <li>select():执行NIO.selector.select()</li>
 </ul>
+<<<<<<< HEAD
 <h4 id="AbstractPollingIoAcceptor"><a href="#AbstractPollingIoAcceptor" class="headerlink" title="AbstractPollingIoAcceptor"></a>AbstractPollingIoAcceptor</h4><ul>
+=======
+<h4 id="AbstractPollingIoAcceptor">AbstractPollingIoAcceptor</h4><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li>Acceptor -&gt; Runnable:run()</li>
 <li><p>SimpleIoProcessorPool -&gt; IoProcessor</p>
 </li>
@@ -220,6 +247,7 @@ sele">
 </li>
 <li>Accept.run():调用open()、select(),将select()返回的SelectionKey通过accept(IoProcessor)初始化为NioSocketSession,随后初始化session，并将session绑定到processor(最终绑定processor的逻辑在SimpleIoProcessorPool.add(),该方法调用NioProcessor数组中某个NioProcessor的add方法将session与其绑定，第一次调用NioProcessor.add时将启动processor线程)</li>
 </ul>
+<<<<<<< HEAD
 <h2 id="Read/Write_u4E8B_u4EF6_u5904_u7406"><a href="#Read/Write_u4E8B_u4EF6_u5904_u7406" class="headerlink" title="Read/Write事件处理"></a>Read/Write事件处理</h2><ul>
 <li>继承关系：NioProcessor -&gt; AbstractPollingIoProcessor</li>
 </ul>
@@ -227,6 +255,15 @@ sele">
 <li>NioProcessor[]：Processor数组，默认大小为CPU核心数量+1；</li>
 </ul>
 <h4 id="NioProcessor"><a href="#NioProcessor" class="headerlink" title="NioProcessor"></a>NioProcessor</h4><ul>
+=======
+<h2 id="Read/Write事件处理">Read/Write事件处理</h2><ul>
+<li>继承关系：NioProcessor -&gt; AbstractPollingIoProcessor</li>
+</ul>
+<h4 id="SimpleIoProcessorPool">SimpleIoProcessorPool</h4><ul>
+<li>NioProcessor[]：Processor数组，默认大小为CPU核心数量+1；</li>
+</ul>
+<h4 id="NioProcessor">NioProcessor</h4><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li><p>selector</p>
 </li>
 <li><p>init()；打开selector；</p>
@@ -235,7 +272,11 @@ sele">
 <li>selectedSessions():返回selector.selectedKeys()方法；</li>
 <li>registerNewSelector():处理当程序掉入nio坑里时，将老selector中所有keys注册到新selector上面；</li>
 </ul>
+<<<<<<< HEAD
 <h4 id="AbstractPollingIoProcessor"><a href="#AbstractPollingIoProcessor" class="headerlink" title="AbstractPollingIoProcessor"></a>AbstractPollingIoProcessor</h4><ul>
+=======
+<h4 id="AbstractPollingIoProcessor">AbstractPollingIoProcessor</h4><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li><p>Processor -&gt; Runnable</p>
 </li>
 <li><p>add():将新session加入到Queue，随后检查如果第一次被调用的话则启动startupProcessor()方法执行Processor.run()；</p>
@@ -248,7 +289,11 @@ sele">
 <li>flushNow(session):取出session中的writeRequestQueue，发送队列里面的数据；</li>
 <li>scheduleFlush(session)：将session重新加入到flushingSession中；</li>
 </ul>
+<<<<<<< HEAD
 <h2 id="session"><a href="#session" class="headerlink" title="session"></a>session</h2><p>NioSocketSession -&gt; NioSession -&gt; AbstractIoSession</p>
+=======
+<h2 id="session">session</h2><p>NioSocketSession -&gt; NioSession -&gt; AbstractIoSession</p>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
       
     </div>
@@ -279,7 +324,24 @@ sele">
 </article>
 
 
+<<<<<<< HEAD
 
+=======
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
 
 
@@ -290,7 +352,11 @@ sele">
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
+<<<<<<< HEAD
     		&copy; 2016 Qun
+=======
+    		&copy; 2015 Qun
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

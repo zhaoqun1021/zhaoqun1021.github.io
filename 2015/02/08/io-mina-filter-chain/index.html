@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   
+<<<<<<< HEAD
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
   <title>Mina之责任链模式实现 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="数据结构DefaultIoFilterChain
@@ -48,7 +51,10 @@ EntryImpl ne">
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <body>
   <div id="container">
     <div class="left-col">
@@ -113,7 +119,10 @@ EntryImpl ne">
 		</div>
 	</header>				
 </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     </div>
     <div class="mid-col">
       <nav id="mobile-nav">
@@ -124,9 +133,13 @@ EntryImpl ne">
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
+<<<<<<< HEAD
 			
 				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
 			
+=======
+				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 			</div>
 			<hgroup>
 			  <h1 class="header-author">Qun</h1>
@@ -160,7 +173,10 @@ EntryImpl ne">
 		</header>				
 	</div>
 </nav>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
       <div class="body-wrap"><article id="post-io-mina-filter-chain" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -198,24 +214,41 @@ EntryImpl ne">
     
     <div class="article-entry" itemprop="articleBody">
       
+<<<<<<< HEAD
         <h2 id="u6570_u636E_u7ED3_u6784"><a href="#u6570_u636E_u7ED3_u6784" class="headerlink" title="数据结构"></a>数据结构</h2><h4 id="DefaultIoFilterChain"><a href="#DefaultIoFilterChain" class="headerlink" title="DefaultIoFilterChain"></a>DefaultIoFilterChain</h4><ul>
+=======
+        <h2 id="数据结构">数据结构</h2><h4 id="DefaultIoFilterChain">DefaultIoFilterChain</h4><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li>EntryImpl head;</li>
 <li>EntryImpl tail;</li>
 </ul>
 <p>Mina的责任链数据结构主要是一个双向链表，链表项为Entry的实现EntryImpl，DefaultIoFilterChain中保存了链表的head和tail。</p>
+<<<<<<< HEAD
 <h4 id="EntryImpl"><a href="#EntryImpl" class="headerlink" title="EntryImpl"></a>EntryImpl</h4><ul>
+=======
+<h4 id="EntryImpl">EntryImpl</h4><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li>IoFilter filter;</li>
 <li>EntryImpl prevEntry;</li>
 <li>EntryImpl nextEntry;</li>
 <li>NextFilter nextFilter;</li>
 </ul>
 <p>EntryImpl是IoFilter的包装，还提供了前后节点的链接。需要关注的是NextFilter类，由于责任链的两端都可能触发事件，不同事件在链中的传递方向不同，所以IoFilter的实现需要根据不同的事件来判断下一个需要接收事件的Entry是在哪个方向，而Nextfilter正是将这部分逻辑从filter中分离出来，Nextfilter中包含了双向链表中两个方向所有可能发生的事件类型，这样IoFilter只需要根据不同事件调用NextFilter中不同方法即可。</p>
+<<<<<<< HEAD
 <h4 id="IoFilter"><a href="#IoFilter" class="headerlink" title="IoFilter"></a>IoFilter</h4><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
 <h2 id="u65B9_u5411"><a href="#u65B9_u5411" class="headerlink" title="方向"></a>方向</h2><ul>
 <li>write: tail -&gt; head、previous</li>
 <li>receive: head -&gt; tail、next</li>
 </ul>
 <h2 id="u673A_u5236"><a href="#u673A_u5236" class="headerlink" title="机制"></a>机制</h2>
+=======
+<h4 id="IoFilter">IoFilter</h4><p>IoFilter是责任链模型中的每个节点主要代码需要实现的接口，包含messageReceive、messageSent等方法。</p>
+<h2 id="方向">方向</h2><ul>
+<li>write: tail -&gt; head、previous</li>
+<li>receive: head -&gt; tail、next</li>
+</ul>
+<h2 id="机制">机制</h2>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
       
     </div>
     
@@ -245,7 +278,24 @@ EntryImpl ne">
 </article>
 
 
+<<<<<<< HEAD
 
+=======
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
 
 
@@ -256,7 +306,11 @@ EntryImpl ne">
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
+<<<<<<< HEAD
     		&copy; 2016 Qun
+=======
+    		&copy; 2015 Qun
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

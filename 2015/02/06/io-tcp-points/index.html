@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   
+<<<<<<< HEAD
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
   <title>TCP的那些事 | Zhao Qun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="延迟ack因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了">
@@ -24,7 +27,10 @@
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <body>
   <div id="container">
     <div class="left-col">
@@ -89,7 +95,10 @@
 		</div>
 	</header>				
 </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     </div>
     <div class="mid-col">
       <nav id="mobile-nav">
@@ -100,9 +109,13 @@
 	<div class="intrude-less">
 		<header id="header" class="inner">
 			<div class="profilepic">
+<<<<<<< HEAD
 			
 				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
 			
+=======
+				<img lazy-src="http://blog.zhaoqun911.cn/%E5%A4%B4%E5%83%8F.png" class="js-avatar">
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 			</div>
 			<hgroup>
 			  <h1 class="header-author">Qun</h1>
@@ -136,7 +149,10 @@
 		</header>				
 	</div>
 </nav>
+<<<<<<< HEAD
 
+=======
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
       <div class="body-wrap"><article id="post-io-tcp-points" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -174,7 +190,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+<<<<<<< HEAD
         <h2 id="u5EF6_u8FDFack"><a href="#u5EF6_u8FDFack" class="headerlink" title="延迟ack"></a>延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
+=======
+        <h2 id="延迟ack">延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <p>至于延迟ack的意义，除了上文提到的可以提高ack的传输效率，还可以进行“捎带”操作。</p>
 <p>延迟ack似乎也只是在正常情况下才会使用，那什么情况下接收方不会累计确认而会立即响应ack呢？看一下ack的发送时机:</p>
 <ul>
@@ -183,7 +203,11 @@
 <li>发现有失序到达的数据包时，立即响应冗余ack</li>
 <li>发现有比失序到达的数据包序号更小的数据包时，立即响应ack</li>
 </ul>
+<<<<<<< HEAD
 <h2 id="u62E5_u585E_u63A7_u5236"><a href="#u62E5_u585E_u63A7_u5236" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><ul>
+=======
+<h2 id="拥塞控制">拥塞控制</h2><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li>CongWin：拥塞窗口大小，已经发送但还未收到ack的数据包数量；</li>
 <li>慢启动：当tcp开始传输时CongWin大小为1，每收到一个ack后CongWin++,即每过一个RTT之后CongWin = CongWin*2；</li>
 <li>拥塞避免：当速率到达某个值(slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTTCongWin++；</li>
@@ -191,7 +215,11 @@
 <li>收到3个冗余ack丢包：当发送方收到3个冗余ack时，CongWin = CongWin/2，ssthresh = CongWin，进入拥塞避免；</li>
 <li>快速恢复：当发生超时丢包后又收到了3个冗余ack，那么TCP认为网络情况还没有之认为的那么严重，随机进入拥塞避免，即CongWin恢复为丢包时的一半，ssthresh恢复为丢包时的CongWin值。</li>
 </ul>
+<<<<<<< HEAD
 <h2 id="u72B6_u6001_u6C47_u603B"><a href="#u72B6_u6001_u6C47_u603B" class="headerlink" title="状态汇总"></a>状态汇总</h2><ul>
+=======
+<h2 id="状态汇总">状态汇总</h2><ul>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 <li>closed</li>
 <li>listen</li>
 <li>syn_sent</li>
@@ -234,7 +262,24 @@
 </article>
 
 
+<<<<<<< HEAD
 
+=======
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
 
 
 
@@ -245,7 +290,11 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
+<<<<<<< HEAD
     		&copy; 2016 Qun
+=======
+    		&copy; 2015 Qun
+>>>>>>> d4b35f9adbe533aed193969b455503db21240116
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
