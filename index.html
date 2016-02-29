@@ -138,6 +138,58 @@
 
       <div class="body-wrap">
   
+    <article id="post-distributed-consistency-paxos2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/02/29/distributed-consistency-paxos2/" class="article-date">
+  	<time datetime="2016-02-29T07:05:49.000Z" itemprop="datePublished">2016-02-29</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/02/29/distributed-consistency-paxos2/">distributed-consistency-paxos2</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-distributed-consistency-zab" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -296,7 +348,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Dubbo_u7B80_u4ECB"><a href="#Dubbo_u7B80_u4ECB" class="headerlink" title="Dubbo简介"></a>Dubbo简介</h2><p>dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它</p>
+        <h2 id="Dubbo_u7B80_u4ECB"><a href="#Dubbo_u7B80_u4ECB" class="headerlink" title="Dubbo简介"></a>Dubbo简介</h2><p>dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它有足够的理由让大家认可。</p>
 <ul>
 <li>足够健壮，有多年生产环境实践经验；</li>
 <li>足够开放，它所依赖的都是开源且流行的组件；</li>
@@ -305,8 +357,8 @@
 <h2 id="u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE"><a href="#u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE" class="headerlink" title="关于Dubbo的默认协议"></a>关于Dubbo的默认协议</h2><p>Dubbo的默认协议即Dubbo协议，它使用单TCP链接的Hessian序列化协议，Hessian虽然性能不及ProtocolBuffer、Thrift，但其不需要中间解释文件，相对灵活，对于一般公司来说已经足够。至于单链接也许会存在争议，有人可能会说单链接存在带宽问题，其实如果不是某个请求发送大文件，业务之间不会相互影响，而且性能略好，但是如果网络环境较差再加上业务量陡增的话就悲催了。</p>
 <h2 id="u67B6_u6784_u7B80_u6790"><a href="#u67B6_u6784_u7B80_u6790" class="headerlink" title="架构简析"></a>架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
 <ul>
-<li>从架构角度来说，Dubbo为Netty、Mina、Jetty等组件以及Hessian、Thrift等协议提供了平台，即Netty等提供数据传输功能，Hessian等提供协议功能，这样可以使各种方式灵活搭配以满足不同场景需要。</li>
-<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码。</li>
+<li>从架构角度来说，微内核的Dubbo为Netty、Mina、Jetty等组件以及Hessian、Thrift等协议提供了平台，即Netty等提供数据传输功能，Hessian等提供协议功能，这样可以使各种方式灵活搭配以满足不同场景需要。</li>
+<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码，除此之外，Dubbo的责任链还有负载均衡、错误重试、降级、限流等功能。<h2 id="u7591_u95EE"><a href="#u7591_u95EE" class="headerlink" title="疑问"></a>疑问</h2>对于一个RPC框架来说真的需要这样的插件式架构吗，对于大部分项目来说，只要选中了一个插件组合基本上就不会再频繁变动，而Dubbo提供了如此多的选择，如此多的重复功能的插件，对于用户来说大部分都是没有用的，而架构上又要满足不同插件的不同特性做适配，导致框架整体上确实太重了。个人认为RPC框架选择了一种协议或者网络框架之后应该在此之上做精做细，而不是把能做RPC框架的所有插件都集成进来。</li>
 </ul>
 
       
@@ -675,7 +727,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="u5EF6_u8FDFack"><a href="#u5EF6_u8FDFack" class="headerlink" title="延迟ack"></a>延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
+        <h2 id="u5F00_u59CB"><a href="#u5F00_u59CB" class="headerlink" title="开始"></a>开始</h2><p>这篇文章主要总结一些个人认为TCP中比较重要又容易引起混淆的理论</p>
+<h2 id="u5EF6_u8FDFack"><a href="#u5EF6_u8FDFack" class="headerlink" title="延迟ack"></a>延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
 <p>至于延迟ack的意义，除了上文提到的可以提高ack的传输效率，还可以进行“捎带”操作。</p>
 <p>延迟ack似乎也只是在正常情况下才会使用，那什么情况下接收方不会累计确认而会立即响应ack呢？看一下ack的发送时机:</p>
 <ul>
@@ -762,79 +815,6 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="u6458_u8981"><a href="#u6458_u8981" class="headerlink" title="摘要"></a>摘要</h2>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/java/">java</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-java-gc" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/02/03/java-gc/" class="article-date">
-  	<time datetime="2015-02-03T10:52:34.000Z" itemprop="datePublished">2015-02-03</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/03/java-gc/">Java垃圾回收</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u6982_u5FF5"><a href="#u6982_u5FF5" class="headerlink" title="概念"></a>概念</h2><h4 id="u5185_u5B58_u56DE_u6536"><a href="#u5185_u5B58_u56DE_u6536" class="headerlink" title="内存回收"></a>内存回收</h4><p>因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。</p>
-<h4 id="u5206_u4EE3"><a href="#u5206_u4EE3" class="headerlink" title="分代"></a>分代</h4><p>正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简单的方式是提高回收线程的执行频率，但是这将导致性能问题，对象的生命周期内将被检查多次，生命周期长的对象将被无谓的多次被检查。为了权衡两者的关系，这才催生了另一个概念：分代，不同生命周期的对象分别放在不同的区域，不同区域的回收频率不同，这大大提高系统效率。</p>
-<h4 id="u5783_u573E_u56DE_u6536_u7B97_u6CD5"><a href="#u5783_u573E_u56DE_u6536_u7B97_u6CD5" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h4><ul>
-<li>年轻代算法：标记复制。因为年轻代的垃圾回收频率高，年轻代的回收时间应该越短越好，所以年轻代以空间换时间，使用标记复制算法。</li>
-<li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
-</ul>
-<h2 id="u5783_u573E_u56DE_u6536_u5668"><a href="#u5783_u573E_u56DE_u6536_u5668" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><h4 id="u5E74_u8F7B_u4EE3"><a href="#u5E74_u8F7B_u4EE3" class="headerlink" title="年轻代"></a>年轻代</h4><h4 id="u5E74_u8001_u4EE3"><a href="#u5E74_u8001_u4EE3" class="headerlink" title="年老代"></a>年老代</h4><h4 id="u7EC4_u5408_u65B9_u5F0F"><a href="#u7EC4_u5408_u65B9_u5F0F" class="headerlink" title="组合方式"></a>组合方式</h4><h2 id="u91CD_u70B9_u4ECB_u7ECDCMS"><a href="#u91CD_u70B9_u4ECB_u7ECDCMS" class="headerlink" title="重点介绍CMS"></a>重点介绍CMS</h2><p>CMS有何缺点？</p>
-<ul>
-<li>减小吞吐量</li>
-<li>造成浮动垃圾，增加了碎片问题负担</li>
-</ul>
-<p>CMS模式下何时会触发FullGC？</p>
-<ul>
-<li>Concurrent-mode-failure：空间问题；Promotion-mode-failure：碎片问题</li>
-<li>持久代满，且未启用 CMSClassUnloadingEnabled</li>
-<li>显式调用System.gc，且未启用ExplicitGCInvokesConcurrent</li>
-</ul>
-
       
     </div>
     

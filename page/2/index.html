@@ -138,6 +138,79 @@
 
       <div class="body-wrap">
   
+    <article id="post-java-gc" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/03/java-gc/" class="article-date">
+  	<time datetime="2015-02-03T10:52:34.000Z" itemprop="datePublished">2015-02-03</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/03/java-gc/">Java垃圾回收</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="u6982_u5FF5"><a href="#u6982_u5FF5" class="headerlink" title="概念"></a>概念</h2><h4 id="u5185_u5B58_u56DE_u6536"><a href="#u5185_u5B58_u56DE_u6536" class="headerlink" title="内存回收"></a>内存回收</h4><p>因为语言的特性，Java不需要开发者手动回收内存，这部分工作由JVM来完成，至于何时回收需要回收的对象，从理论上来说最好的时机是在对象失去引用的时候，但是做到这一点对性能影响颇大，所有Java选择了另一种方法，那就是周期性去遍历所有对象，找出需要回收的对象然后做回收操作。</p>
+<h4 id="u5206_u4EE3"><a href="#u5206_u4EE3" class="headerlink" title="分代"></a>分代</h4><p>正如上文所说，对象失去引用在回收线程发现它之前仍将存在一段时间，但是Java希望没用的对象能尽快被回收，比较简单的方式是提高回收线程的执行频率，但是这将导致性能问题，对象的生命周期内将被检查多次，生命周期长的对象将被无谓的多次被检查。为了权衡两者的关系，这才催生了另一个概念：分代，不同生命周期的对象分别放在不同的区域，不同区域的回收频率不同，这大大提高系统效率。</p>
+<h4 id="u5783_u573E_u56DE_u6536_u7B97_u6CD5"><a href="#u5783_u573E_u56DE_u6536_u7B97_u6CD5" class="headerlink" title="垃圾回收算法"></a>垃圾回收算法</h4><ul>
+<li>年轻代算法：标记复制。因为年轻代的垃圾回收频率高，年轻代的回收时间应该越短越好，所以年轻代以空间换时间，使用标记复制算法。</li>
+<li>年老代算法：标记整理、标记清除。因为年老代的对象都是在年轻代多次被回收后才来的，所以JVM就认为它们的生命周期长不可测，不应该频繁被无谓检查，所以年老代往往比较大，而且正常情况下长时间不应该被检查。</li>
+</ul>
+<h2 id="u5783_u573E_u56DE_u6536_u5668"><a href="#u5783_u573E_u56DE_u6536_u5668" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h2><h4 id="u5E74_u8F7B_u4EE3"><a href="#u5E74_u8F7B_u4EE3" class="headerlink" title="年轻代"></a>年轻代</h4><h4 id="u5E74_u8001_u4EE3"><a href="#u5E74_u8001_u4EE3" class="headerlink" title="年老代"></a>年老代</h4><h4 id="u7EC4_u5408_u65B9_u5F0F"><a href="#u7EC4_u5408_u65B9_u5F0F" class="headerlink" title="组合方式"></a>组合方式</h4><h2 id="u91CD_u70B9_u4ECB_u7ECDCMS"><a href="#u91CD_u70B9_u4ECB_u7ECDCMS" class="headerlink" title="重点介绍CMS"></a>重点介绍CMS</h2><p>CMS有何缺点？</p>
+<ul>
+<li>减小吞吐量</li>
+<li>造成浮动垃圾，增加了碎片问题负担</li>
+</ul>
+<p>CMS模式下何时会触发FullGC？</p>
+<ul>
+<li>Concurrent-mode-failure：空间问题；Promotion-mode-failure：碎片问题</li>
+<li>持久代满，且未启用 CMSClassUnloadingEnabled</li>
+<li>显式调用System.gc，且未启用ExplicitGCInvokesConcurrent</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/java/">java</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-java-javassist" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -236,7 +309,7 @@
 <p>运行时包的存在同样是出于安全考虑。</p>
 <h2 id="u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668"><a href="#u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668" class="headerlink" title="自定义加载器"></a>自定义加载器</h2><p>如何实现自定义加载器？</p>
 <p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
-<h2 id="JavaEE_u7684_u7C7B_u52A0_u8F7D"><a href="#JavaEE_u7684_u7C7B_u52A0_u8F7D" class="headerlink" title="JavaEE的类加载"></a>JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。avaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。</p>
+<h2 id="JavaEE_u7684_u7C7B_u52A0_u8F7D"><a href="#JavaEE_u7684_u7C7B_u52A0_u8F7D" class="headerlink" title="JavaEE的类加载"></a>JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。JavaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。</p>
 <p>JavaEE的 委派模型：<br><img src="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg" alt="JavaEE的类加载"></p>
 <h2 id="u7C7B_u52A0_u8F7D_u8FC7_u7A0B"><a href="#u7C7B_u52A0_u8F7D_u8FC7_u7A0B" class="headerlink" title="类加载过程"></a>类加载过程</h2><p>加载、连接、初始化：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmbxmee0j20lj088q3w.jpg" alt="类加载过程"></p>
 <p>连接阶段：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmaslm26j20lf086wff.jpg" alt="类加载过程"></p>
@@ -483,7 +556,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="u5173_u4E8ETCP"><a href="#u5173_u4E8ETCP" class="headerlink" title="关于TCP"></a>关于TCP</h2><p>TCP有几十年的发展历史，可以算得上一门古老的学问，虽然它并不完美也不能解决所有问题，但是足够复杂，足够优雅。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然说古老，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。</p>
+        <h2 id="u5173_u4E8ETCP"><a href="#u5173_u4E8ETCP" class="headerlink" title="关于TCP"></a>关于TCP</h2><p>TCP有几十年的发展历史，可以算得上一门古老的学问，虽然它并不完美也不能解决所有问题，但是足够优雅，也足够复杂。如果需要详尽地描述TCP的实现可能几本书都不够，在几十年的时间里不断在争议中发展，虽然说古老，但随着使用场景的变化目前仍然在不断革新，本文就TCP协议中的一些新理念做简要描述。</p>
 <p>## </p>
 
       
@@ -623,7 +696,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Hello_World"><a href="#Hello_World" class="headerlink" title="Hello World"></a>Hello World</h2><p>新博客：GitHub + Hexo<br>cc</p>
+        <h2 id="Hello_World"><a href="#Hello_World" class="headerlink" title="Hello World"></a>Hello World</h2><p>新博客：GitHub + Hexo</p>
 <h2 id="u5B89_u88C5Node-js_u3001Git"><a href="#u5B89_u88C5Node-js_u3001Git" class="headerlink" title="安装Node.js、Git"></a>安装Node.js、Git</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Node.js</span><br><span class="line">&amp;</span><br><span class="line">Git</span><br></pre></td></tr></table></figure>
 <h2 id="u914D_u7F6EGtiHub"><a href="#u914D_u7F6EGtiHub" class="headerlink" title="配置GtiHub"></a>配置GtiHub</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">生成密钥：ssh-keygen -t rsa -C <span class="string">"911@zhaoqun911.cn"</span></span><br><span class="line"></span><br><span class="line">将配置到GitHub： Account Settings—-&gt;SSH Public keys —-&gt; add another public keys（C:\Users\xx\.ssh\id_rsa.pub）</span><br><span class="line"></span><br><span class="line">测试：ssh -T git@github.com</span><br><span class="line"></span><br><span class="line">设置用户信息：git config --global user.name <span class="string">"xx"</span>； git config --global user.email  <span class="string">"xx"</span></span><br></pre></td></tr></table></figure>
 <h2 id="u5B89_u88C5_u3001_u914D_u7F6Ehexo"><a href="#u5B89_u88C5_u3001_u914D_u7F6Ehexo" class="headerlink" title="安装、配置hexo"></a>安装、配置hexo</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line"></span><br><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> theme</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:litten/hexo-theme-yilia yilia</span><br><span class="line"></span><br><span class="line">修改配置文件:theme:yilia</span><br><span class="line"></span><br><span class="line">hexo g</span><br><span class="line"></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
