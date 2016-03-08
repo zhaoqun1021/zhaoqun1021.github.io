@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Zhao Qun's blog">
 <meta property="og:description" content="开始这篇文章主要总结一些个人认为TCP中比较重要又容易引起混淆的理论
 延迟ack因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据">
-<meta property="og:updated_time" content="2016-02-29T07:36:51.366Z">
+<meta property="og:updated_time" content="2016-02-29T08:34:29.968Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP的那些事">
 <meta name="twitter:description" content="开始这篇文章主要总结一些个人认为TCP中比较重要又容易引起混淆的理论
@@ -190,7 +190,7 @@
 <h2 id="u62E5_u585E_u63A7_u5236"><a href="#u62E5_u585E_u63A7_u5236" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><ul>
 <li>CongWin：拥塞窗口大小，已经发送但还未收到ack的数据包数量；</li>
 <li>慢启动：当tcp开始传输时CongWin大小为1，每收到一个ack后CongWin++,即每过一个RTT之后CongWin = CongWin*2；</li>
-<li>拥塞避免：当速率到达某个值(slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTTCongWin++；</li>
+<li>拥塞避免：当速率到达某个值(ssthresh：slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTT之后CongWin++；</li>
 <li>超时丢包：当发生超时丢包时，TCP认为情况太糟糕，反应很强烈，CongWin = 1，ssthresh = CongWin/2，重新进入慢启动过程。</li>
 <li>收到3个冗余ack丢包：当发送方收到3个冗余ack时，CongWin = CongWin/2，ssthresh = CongWin，进入拥塞避免；</li>
 <li>快速恢复：当发生超时丢包后又收到了3个冗余ack，那么TCP认为网络情况还没有之认为的那么严重，随机进入拥塞避免，即CongWin恢复为丢包时的一半，ssthresh恢复为丢包时的CongWin值。</li>

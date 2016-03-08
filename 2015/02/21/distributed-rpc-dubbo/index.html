@@ -20,7 +20,7 @@
 足够健壮，有多年生产环境实践经验；
 足够开放，它所依赖的都是开源且流行的组件；
 足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层">
-<meta property="og:updated_time" content="2016-02-29T07:30:02.613Z">
+<meta property="og:updated_time" content="2016-02-29T08:51:40.473Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RPC框架-Dubbo">
 <meta name="twitter:description" content="Dubbo简介dubbo是阿里巴巴开发的RPC框架，虽然阿里集团内部使用dubbo并不多，但是近年来dubbo被很多其他互联网厂商广泛使用，这也许就是所谓墙内开花墙外香吧。虽然它并不完美，（如果完美可能就不会有HSF了吧），但是它有足够的理由让大家认可。
@@ -193,10 +193,13 @@
 <li>足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。</li>
 </ul>
 <h2 id="u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE"><a href="#u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE" class="headerlink" title="关于Dubbo的默认协议"></a>关于Dubbo的默认协议</h2><p>Dubbo的默认协议即Dubbo协议，它使用单TCP链接的Hessian序列化协议，Hessian虽然性能不及ProtocolBuffer、Thrift，但其不需要中间解释文件，相对灵活，对于一般公司来说已经足够。至于单链接也许会存在争议，有人可能会说单链接存在带宽问题，其实如果不是某个请求发送大文件，业务之间不会相互影响，而且性能略好，但是如果网络环境较差再加上业务量陡增的话就悲催了。</p>
-<h2 id="u67B6_u6784_u7B80_u6790"><a href="#u67B6_u6784_u7B80_u6790" class="headerlink" title="架构简析"></a>架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
+<h2 id="u67B6_u6784_u7B80_u6790"><a href="#u67B6_u6784_u7B80_u6790" class="headerlink" title="架构简析"></a>架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>广义上Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
 <ul>
 <li>从架构角度来说，微内核的Dubbo为Netty、Mina、Jetty等组件以及Hessian、Thrift等协议提供了平台，即Netty等提供数据传输功能，Hessian等提供协议功能，这样可以使各种方式灵活搭配以满足不同场景需要。</li>
-<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码，除此之外，Dubbo的责任链还有负载均衡、错误重试、降级、限流等功能。<h2 id="u7591_u95EE"><a href="#u7591_u95EE" class="headerlink" title="疑问"></a>疑问</h2>对于一个RPC框架来说真的需要这样的插件式架构吗，对于大部分项目来说，只要选中了一个插件组合基本上就不会再频繁变动，而Dubbo提供了如此多的选择，如此多的重复功能的插件，对于用户来说大部分都是没有用的，而架构上又要满足不同插件的不同特性做适配，导致框架整体上确实太重了。个人认为RPC框架选择了一种协议或者网络框架之后应该在此之上做精做细，而不是把能做RPC框架的所有插件都集成进来。</li>
+<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码，除此之外，Dubbo的责任链还有负载均衡、错误重试、降级、限流等功能。</li>
+</ul>
+<h2 id="u7591_u95EE"><a href="#u7591_u95EE" class="headerlink" title="疑问"></a>疑问</h2><ul>
+<li>对于一个RPC框架来说真的需要这样的插件式架构吗，对于大部分项目来说，只要选中了一个插件组合基本上就不会再频繁变动，而Dubbo提供了如此多的选择，如此多的重复功能的插件，对于用户来说大部分都是没有用的，而架构上又要满足不同插件的不同特性做适配，导致框架整体上确实太重了。个人认为RPC框架选择了一种协议或者网络框架之后应该在此之上做精做细，而不是把能做RPC框架的所有插件都集成进来。</li>
 </ul>
 
       

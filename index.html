@@ -138,11 +138,11 @@
 
       <div class="body-wrap">
   
-    <article id="post-distributed-consistency-paxos2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-about paxos" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/02/29/distributed-consistency-paxos2/" class="article-date">
-  	<time datetime="2016-02-29T07:05:49.000Z" itemprop="datePublished">2016-02-29</time>
+      <a href="/2015/03/08/about paxos/" class="article-date">
+  	<time datetime="2015-03-08T07:05:49.000Z" itemprop="datePublished">2015-03-08</time>
 </a>
     </div>
   
@@ -155,7 +155,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/02/29/distributed-consistency-paxos2/">distributed-consistency-paxos2</a>
+      <a class="article-title" href="/2015/03/08/about paxos/">Paxos那些事儿</a>
     </h1>
   
 
@@ -164,7 +164,38 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="u4E3A_u4F55prepare_u8BF7_u6C42_u8981_u8FC7_u534A_u8FD4_u56DE_u624D_u7B97_u6210_u529F_uFF1F"><a href="#u4E3A_u4F55prepare_u8BF7_u6C42_u8981_u8FC7_u534A_u8FD4_u56DE_u624D_u7B97_u6210_u529F_uFF1F" class="headerlink" title="为何prepare请求要过半返回才算成功？"></a>为何prepare请求要过半返回才算成功？</h2><ul>
+<li>可终止性：一旦有过半节点的为同一个状态，则集群的状态确定，以后无法改变；</li>
+<li>获取Accept请求锁：集群任何时刻，Accept只能接受一个版本号，即最近成功请求prepare的版本号；</li>
+</ul>
+<h2 id="u4E3A_u4F55_u8981_u4F7F_u7528_u6700_u65B0_u7684_u7248_u672C_u53F7_uFF1F"><a href="#u4E3A_u4F55_u8981_u4F7F_u7528_u6700_u65B0_u7684_u7248_u672C_u53F7_uFF1F" class="headerlink" title="为何要使用最新的版本号？"></a>为何要使用最新的版本号？</h2><ul>
+<li>Paxos的约定：分歧状态下选取最新的提案广播</li>
+<li>Acceptor的目的就是获取集群最新状态</li>
+<li>Paxos选举是一个过程，从集群的多种状态最终衍变到唯一状态，后者认同前者</li>
+</ul>
+<h2 id="Paxos_u9009_u4E3E_u7684_u539F_u5B50_u6027_uFF1F"><a href="#Paxos_u9009_u4E3E_u7684_u539F_u5B50_u6027_uFF1F" class="headerlink" title="Paxos选举的原子性？"></a>Paxos选举的原子性？</h2><ul>
+<li>Prepare、Accept通过序号锁定一次选举：<ul>
+<li>串行执行：P1————&gt;o|P2————&gt;o|A1- - - - -&gt;o|A2————&gt;o</li>
+</ul>
+</li>
+</ul>
+<h2 id="Paxos_u9009_u4E3E_u7684_u751F_u547D_u5468_u671F"><a href="#Paxos_u9009_u4E3E_u7684_u751F_u547D_u5468_u671F" class="headerlink" title="Paxos选举的生命周期"></a>Paxos选举的生命周期</h2><ul>
+<li>如果出现大于自己之前收到的序号，说明选举仍然在继续</li>
+<li>历史终究是历史，历史不能改变，能改变的只有未来</li>
+</ul>
+<h2 id="Paxos_u9009_u4E3E_u8FC7_u7A0B_u7684_u4E2D_u5173_u952E_u8282_u70B9"><a href="#Paxos_u9009_u4E3E_u8FC7_u7A0B_u7684_u4E2D_u5173_u952E_u8282_u70B9" class="headerlink" title="Paxos选举过程的中关键节点"></a>Paxos选举过程的中关键节点</h2><ul>
+<li>空</li>
+<li>非空未过半</li>
+<li>非空过半</li>
+<li>相同状态未过半</li>
+<li>相同状态过半————结束</li>
+</ul>
+<h2 id="Paxos_u3001ZAB_u3001Raft_u4E09_u8005_u5173_u7CFB"><a href="#Paxos_u3001ZAB_u3001Raft_u4E09_u8005_u5173_u7CFB" class="headerlink" title="Paxos、ZAB、Raft三者关系"></a>Paxos、ZAB、Raft三者关系</h2><ul>
+<li>个人认为Paxos与ZAB、Raft没有什么关系，因为ZAB、Raft是有Leader的角色，提案广播是基于顺序的，过程中某一提案是否最终提交可以依赖于下一次广播；而Paxos理论上任何节点都可以发起提案，而每一次选举是独立的。</li>
+<li>如果硬要说有什么相似之处，那么ZAB选Leader的过程与Paxos是非常相近的，区别就在于约定不同，Paxos的前提是选取最新提案而不关心提案的值，而ZAB选择提案是根据提案的值来确定，因此Paxos需要一个版本号，而ZAB不需要，有人会说ZAB也有版本号的东东，其实在Paxos的世界里那个不是提案的版本号，是提案的值。</li>
+<li>Raft选Learder的做法与Paxos和ZAB都不同，选Leader不关心版本号，也不关心提案的值，每个Raft节点都会发起选举请求，为了避免冲突，每个节点sleep一个随机值，谁先获取过半数响应谁就是Leader；这么选Leader后log的index不一样怎么办？很简单，选完Leader后由Leader进行同步，这有点意思。不过Raft在多节点集群以及较差网络环境下进行Leader选举似乎会比较困难了。</li>
+</ul>
+
       
     </div>
     
@@ -172,6 +203,10 @@
       
       
       
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/distributed/">distributed</a>
+	</div>
+
 
       
       <div class="clearfix"></div>
@@ -355,10 +390,13 @@
 <li>足够灵活，基于插件式架构，可以根据使用场景灵活配置协议和运输层组合。</li>
 </ul>
 <h2 id="u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE"><a href="#u5173_u4E8EDubbo_u7684_u9ED8_u8BA4_u534F_u8BAE" class="headerlink" title="关于Dubbo的默认协议"></a>关于Dubbo的默认协议</h2><p>Dubbo的默认协议即Dubbo协议，它使用单TCP链接的Hessian序列化协议，Hessian虽然性能不及ProtocolBuffer、Thrift，但其不需要中间解释文件，相对灵活，对于一般公司来说已经足够。至于单链接也许会存在争议，有人可能会说单链接存在带宽问题，其实如果不是某个请求发送大文件，业务之间不会相互影响，而且性能略好，但是如果网络环境较差再加上业务量陡增的话就悲催了。</p>
-<h2 id="u67B6_u6784_u7B80_u6790"><a href="#u67B6_u6784_u7B80_u6790" class="headerlink" title="架构简析"></a>架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
+<h2 id="u67B6_u6784_u7B80_u6790"><a href="#u67B6_u6784_u7B80_u6790" class="headerlink" title="架构简析"></a>架构简析</h2><p>对于RPC框架的服务端来说，主要功能无非有两个，即：数据传输 + 协议。<br>广义上Dubbo和Netty同属于RPC框架的范畴，两者对比来看：</p>
 <ul>
 <li>从架构角度来说，微内核的Dubbo为Netty、Mina、Jetty等组件以及Hessian、Thrift等协议提供了平台，即Netty等提供数据传输功能，Hessian等提供协议功能，这样可以使各种方式灵活搭配以满足不同场景需要。</li>
-<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码，除此之外，Dubbo的责任链还有负载均衡、错误重试、降级、限流等功能。<h2 id="u7591_u95EE"><a href="#u7591_u95EE" class="headerlink" title="疑问"></a>疑问</h2>对于一个RPC框架来说真的需要这样的插件式架构吗，对于大部分项目来说，只要选中了一个插件组合基本上就不会再频繁变动，而Dubbo提供了如此多的选择，如此多的重复功能的插件，对于用户来说大部分都是没有用的，而架构上又要满足不同插件的不同特性做适配，导致框架整体上确实太重了。个人认为RPC框架选择了一种协议或者网络框架之后应该在此之上做精做细，而不是把能做RPC框架的所有插件都集成进来。</li>
+<li>从功能上来说，Dubbo是Netty的扩展。Dubbo自身不具备数据传输功能，需要借助Netty等组件实现，两者关于协议功能的实现都是通过自己的责任链完成的，当Dubbo使用Netty作为运输层组件时，Netty的责任链基本没有做任何事情，将接收到的二进制数据全部提交到上层Dubbo的责任链负责协议解码，除此之外，Dubbo的责任链还有负载均衡、错误重试、降级、限流等功能。</li>
+</ul>
+<h2 id="u7591_u95EE"><a href="#u7591_u95EE" class="headerlink" title="疑问"></a>疑问</h2><ul>
+<li>对于一个RPC框架来说真的需要这样的插件式架构吗，对于大部分项目来说，只要选中了一个插件组合基本上就不会再频繁变动，而Dubbo提供了如此多的选择，如此多的重复功能的插件，对于用户来说大部分都是没有用的，而架构上又要满足不同插件的不同特性做适配，导致框架整体上确实太重了。个人认为RPC框架选择了一种协议或者网络框架之后应该在此之上做精做细，而不是把能做RPC框架的所有插件都集成进来。</li>
 </ul>
 
       
@@ -740,7 +778,7 @@
 <h2 id="u62E5_u585E_u63A7_u5236"><a href="#u62E5_u585E_u63A7_u5236" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><ul>
 <li>CongWin：拥塞窗口大小，已经发送但还未收到ack的数据包数量；</li>
 <li>慢启动：当tcp开始传输时CongWin大小为1，每收到一个ack后CongWin++,即每过一个RTT之后CongWin = CongWin*2；</li>
-<li>拥塞避免：当速率到达某个值(slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTTCongWin++；</li>
+<li>拥塞避免：当速率到达某个值(ssthresh：slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTT之后CongWin++；</li>
 <li>超时丢包：当发生超时丢包时，TCP认为情况太糟糕，反应很强烈，CongWin = 1，ssthresh = CongWin/2，重新进入慢启动过程。</li>
 <li>收到3个冗余ack丢包：当发送方收到3个冗余ack时，CongWin = CongWin/2，ssthresh = CongWin，进入拥塞避免；</li>
 <li>快速恢复：当发生超时丢包后又收到了3个冗余ack，那么TCP认为网络情况还没有之认为的那么严重，随机进入拥塞避免，即CongWin恢复为丢包时的一半，ssthresh恢复为丢包时的CongWin值。</li>
