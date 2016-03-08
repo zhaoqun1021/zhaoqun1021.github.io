@@ -138,10 +138,10 @@
 
       <div class="body-wrap">
   
-    <article id="post-about paxos" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-distributed-consistency-paxos-about-paxos" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/03/08/about paxos/" class="article-date">
+      <a href="/2015/03/08/distributed-consistency-paxos-about-paxos/" class="article-date">
   	<time datetime="2015-03-08T07:05:49.000Z" itemprop="datePublished">2015-03-08</time>
 </a>
     </div>
@@ -155,7 +155,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/03/08/about paxos/">Paxos那些事儿</a>
+      <a class="article-title" href="/2015/03/08/distributed-consistency-paxos-about-paxos/">Paxos那些事儿</a>
     </h1>
   
 
@@ -193,7 +193,15 @@
 <h2 id="Paxos_u3001ZAB_u3001Raft_u4E09_u8005_u5173_u7CFB"><a href="#Paxos_u3001ZAB_u3001Raft_u4E09_u8005_u5173_u7CFB" class="headerlink" title="Paxos、ZAB、Raft三者关系"></a>Paxos、ZAB、Raft三者关系</h2><ul>
 <li>个人认为Paxos与ZAB、Raft没有什么关系，因为ZAB、Raft是有Leader的角色，提案广播是基于顺序的，过程中某一提案是否最终提交可以依赖于下一次广播；而Paxos理论上任何节点都可以发起提案，而每一次选举是独立的。</li>
 <li>如果硬要说有什么相似之处，那么ZAB选Leader的过程与Paxos是非常相近的，区别就在于约定不同，Paxos的前提是选取最新提案而不关心提案的值，而ZAB选择提案是根据提案的值来确定，因此Paxos需要一个版本号，而ZAB不需要，有人会说ZAB也有版本号的东东，其实在Paxos的世界里那个不是提案的版本号，是提案的值。</li>
-<li>Raft选Learder的做法与Paxos和ZAB都不同，选Leader不关心版本号，也不关心提案的值，每个Raft节点都会发起选举请求，为了避免冲突，每个节点sleep一个随机值，谁先获取过半数响应谁就是Leader；这么选Leader后log的index不一样怎么办？很简单，选完Leader后由Leader进行同步，这有点意思。不过Raft在多节点集群以及较差网络环境下进行Leader选举似乎会比较困难了。</li>
+<li>Raft选Learder的做法似乎与Paxos和ZAB都不同，选Leader不关心版本号，也不关心提案的值，每个Raft节点都会发起选举请求，为了避免冲突，每个节点sleep一个随机值，谁先获取过半数响应谁就是Leader；这么选Leader后log的index不一样怎么办？很简单，选完Leader后由Leader进行同步，这有点意思。不过Raft在多节点集群以及较差网络环境下进行Leader选举似乎会比较困难了。</li>
+</ul>
+<h2 id="u90A3_u4E9B_u4E8B_u513F"><a href="#u90A3_u4E9B_u4E8B_u513F" class="headerlink" title="那些事儿"></a>那些事儿</h2><ul>
+<li>相同状态未过半时的集群状态<ul>
+<li>实际的状态</li>
+<li>“我眼中的状态”</li>
+</ul>
+</li>
+<li>最大提交原则：冲突状态时某次提案获得Accept响应的节点越多，本次提案的值越有可能成为过半数节点的值，即集群最终值。</li>
 </ul>
 
       
