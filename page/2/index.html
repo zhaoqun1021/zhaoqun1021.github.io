@@ -195,6 +195,7 @@
 <li>time_wait：收到fin报文并响应ack后进入time_wait状态，time_wait状态将持续MSL ×　2的时间，主要出于两个原因:1.尽力确保最后的ack送达，如果ack超时，对方会重发fin，要等待fin以及ack两个报文的线路存在时间，所以需要*2；2.确保本链接关闭时不会影响后面新建立的连接，如果没有time_wait状态而直接关闭并且马上在同样的端口号又重建了一个连接，而最后发送的ack又超时，对方重发fin，这又将新建立的连接关闭了。</li>
 <li>closing：此状态相对比较特殊，主动发送fin后，没有收到ack却收到了fin（双方同时关闭连接），此时响应ack并进入closing状态，随后当收到ack时进入time_wait状态</li>
 </ul>
+<p>TCP状态<br><img src="http://ww1.sinaimg.cn/mw690/414d7865gw1f1yveljumkj20f60lcq43.jpg" alt="TCP状态"></p>
 
       
     </div>
@@ -762,7 +763,10 @@
 <li>快速查找、排序、分组</li>
 <li>减少扫表数量，避免创建临时表，将随机IO变为顺序IO</li>
 </ul>
-<h2 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B-Tree"></a>B-Tree</h2><h2 id="u805A_u7C07_u7D22_u5F15"><a href="#u805A_u7C07_u7D22_u5F15" class="headerlink" title="聚簇索引"></a>聚簇索引</h2><ul>
+<h2 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B-Tree"></a>B-Tree</h2><ul>
+<li>MySQL的Btree实际上是balance tree基础上做了小改动，每个叶子节点都有一个指向后一个叶子节点的指针。</li>
+</ul>
+<h2 id="u805A_u7C07_u7D22_u5F15"><a href="#u805A_u7C07_u7D22_u5F15" class="headerlink" title="聚簇索引"></a>聚簇索引</h2><ul>
 <li>聚簇并不是一种单独的索引类型，而是一种存储方式：InnoDB的聚簇索引在同一个结构中保存了B-Tree索引和行数据，索引就是主键。而覆盖索引也是相同的模型。</li>
 </ul>
 <h2 id="u9AD8_u6027_u80FD_u7D22_u5F15"><a href="#u9AD8_u6027_u80FD_u7D22_u5F15" class="headerlink" title="高性能索引"></a>高性能索引</h2><ul>
@@ -783,7 +787,16 @@
 <li><p>什么情况下无法使用索引</p>
 </li>
 </ul>
-<h2 id="u7D22_u5F15_u4F7F_u7528_u6848_u4F8B"><a href="#u7D22_u5F15_u4F7F_u7528_u6848_u4F8B" class="headerlink" title="索引使用案例"></a>索引使用案例</h2><h2 id="SQL_u5206_u6790"><a href="#SQL_u5206_u6790" class="headerlink" title="SQL分析"></a>SQL分析</h2>
+<h2 id="u7D22_u5F15_u4F7F_u7528_u6848_u4F8B"><a href="#u7D22_u5F15_u4F7F_u7528_u6848_u4F8B" class="headerlink" title="索引使用案例"></a>索引使用案例</h2><h2 id="SQL_u5206_u6790"><a href="#SQL_u5206_u6790" class="headerlink" title="SQL分析"></a>SQL分析</h2><ul>
+<li>explain<ul>
+<li>type列：官方的说法，说这列表示的是“访问类型”，更通俗一点就是:mysql找到需要的数据行的方式，由差到好：All（扫全表）,index（使用索引扫全表）,range（使用索引范围查询）,ref（使用索引返回一行数据）,const（主键查询）。</li>
+<li>extra列：Only index：使用到了索引；Where used：使用到了where限制；Using filesort使用了全文排序；Using temporary使用到了临时表。当extra里显示有using filesort或using temporary时，sql的执行就会很吃力，时间就会增加。</li>
+<li>keys列：使用到的索引</li>
+<li>rows列：扫描的行数</li>
+</ul>
+</li>
+</ul>
+
       
     </div>
     
