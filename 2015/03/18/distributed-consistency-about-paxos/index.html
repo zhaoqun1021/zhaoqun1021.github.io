@@ -16,7 +16,7 @@ Acceptor的目的就是获取集群最新状态
 Paxos选举是一个过程，从集群的多种状态最终衍变到">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Paxos那些事儿">
-<meta property="og:url" content="http://yoursite.com/2015/03/08/distributed-consistency-paxos-about-paxos/index.html">
+<meta property="og:url" content="http://yoursite.com/2015/03/18/distributed-consistency-about-paxos/index.html">
 <meta property="og:site_name" content="Zhao Qun's blog">
 <meta property="og:description" content="为何prepare请求要过半返回才算成功？
 可终止性：一旦有过半节点的为同一个状态，则集群的状态确定，以后无法改变；
@@ -26,7 +26,7 @@ Paxos选举是一个过程，从集群的多种状态最终衍变到">
 Paxos的约定：分歧状态下选取最新的提案广播
 Acceptor的目的就是获取集群最新状态
 Paxos选举是一个过程，从集群的多种状态最终衍变到">
-<meta property="og:updated_time" content="2016-03-08T10:27:39.408Z">
+<meta property="og:updated_time" content="2016-03-15T16:01:54.092Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Paxos那些事儿">
 <meta name="twitter:description" content="为何prepare请求要过半返回才算成功？
@@ -158,11 +158,11 @@ Paxos选举是一个过程，从集群的多种状态最终衍变到">
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="post-distributed-consistency-paxos-about-paxos" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-distributed-consistency-about-paxos" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/03/08/distributed-consistency-paxos-about-paxos/" class="article-date">
-  	<time datetime="2015-03-08T07:05:49.000Z" itemprop="datePublished">2015-03-08</time>
+      <a href="/2015/03/18/distributed-consistency-about-paxos/" class="article-date">
+  	<time datetime="2015-03-18T07:05:49.000Z" itemprop="datePublished">2015-03-18</time>
 </a>
     </div>
   
@@ -226,6 +226,9 @@ Paxos选举是一个过程，从集群的多种状态最终衍变到">
 <li>如果硬要说有什么相似之处，那么ZAB选Leader的过程与Paxos是非常相近的，区别就在于约定不同，Paxos的前提是选取最新提案而不关心提案的值，而ZAB选择提案是根据提案的值来确定，因此Paxos需要一个版本号，而ZAB不需要，有人会说ZAB也有版本号的东东，其实在Paxos的世界里那个不是提案的版本号，是提案的值。</li>
 <li>Raft选Learder的做法似乎与Paxos和ZAB都不同，选Leader不关心版本号，也不关心提案的值，每个Raft节点都会发起选举请求，为了避免冲突，每个节点sleep一个随机值，谁先获取过半数响应谁就是Leader；这么选Leader后log的index不一样怎么办？很简单，选完Leader后由Leader进行同步，这有点意思。不过Raft在多节点集群以及较差网络环境下进行Leader选举似乎会比较困难了。</li>
 </ul>
+<h2 id="ZAB_u3001Raft_u534F_u8BAE_u7684_u53EF_u7EC8_u6B62_u6027_u5B9E_u73B0"><a href="#ZAB_u3001Raft_u534F_u8BAE_u7684_u53EF_u7EC8_u6B62_u6027_u5B9E_u73B0" class="headerlink" title="ZAB、Raft协议的可终止性实现"></a>ZAB、Raft协议的可终止性实现</h2><ul>
+<li>Paxos基于读写串行操作，终止性保证容易理解。对于ZAB和Raft，虽然Leader选举算法不同，但是关于可终止性实现上有相似之处。每个节点刚自认为被选为Leader之后，会给它投票的过半集合发同步请求，如果同样收到了过半集合的Ack，，则Leader取得了其他节点的认可真正成为了Leader，选举结束了。</li>
+</ul>
 <h2 id="u90A3_u4E9B_u4E8B_u513F"><a href="#u90A3_u4E9B_u4E8B_u513F" class="headerlink" title="那些事儿"></a>那些事儿</h2><ul>
 <li>相同状态未过半时的集群状态<ul>
 <li>实际的状态</li>
@@ -242,6 +245,15 @@ Paxos选举是一个过程，从集群的多种状态最终衍变到">
   
     
 <nav id="article-nav">
+  
+    <a href="/2016/03/16/jd/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          jd
+        
+      </div>
+    </a>
   
   
     <a href="/2015/02/26/distributed-consistency-zab/" id="article-nav-older" class="article-nav-link-wrap">
