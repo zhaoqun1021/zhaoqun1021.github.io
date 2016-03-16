@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg">
 <meta property="og:image" content="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmbxmee0j20lj088q3w.jpg">
 <meta property="og:image" content="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmaslm26j20lf086wff.jpg">
-<meta property="og:updated_time" content="2016-02-29T07:38:25.504Z">
+<meta property="og:updated_time" content="2016-03-16T08:24:46.815Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java类加载">
 <meta name="twitter:description" content="JVM的三种加载器根加载器
@@ -227,7 +227,7 @@
 <p>运行时包的存在同样是出于安全考虑。</p>
 <h2 id="u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668"><a href="#u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668" class="headerlink" title="自定义加载器"></a>自定义加载器</h2><p>如何实现自定义加载器？</p>
 <p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
-<h2 id="JavaEE_u7684_u7C7B_u52A0_u8F7D"><a href="#JavaEE_u7684_u7C7B_u52A0_u8F7D" class="headerlink" title="JavaEE的类加载"></a>JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。JavaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。</p>
+<h2 id="JavaEE_u7684_u7C7B_u52A0_u8F7D"><a href="#JavaEE_u7684_u7C7B_u52A0_u8F7D" class="headerlink" title="JavaEE的类加载"></a>JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。JavaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。<br>Tomcat有自定义的类加载器，父加载器为根加载器。</p>
 <p>JavaEE的 委派模型：<br><img src="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg" alt="JavaEE的类加载"></p>
 <h2 id="u7C7B_u52A0_u8F7D_u8FC7_u7A0B"><a href="#u7C7B_u52A0_u8F7D_u8FC7_u7A0B" class="headerlink" title="类加载过程"></a>类加载过程</h2><p>加载、连接、初始化：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmbxmee0j20lj088q3w.jpg" alt="类加载过程"></p>
 <p>连接阶段：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmaslm26j20lf086wff.jpg" alt="类加载过程"></p>

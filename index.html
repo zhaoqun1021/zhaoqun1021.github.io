@@ -164,7 +164,9 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h2><p>逻辑理清楚<br>中间件<br>并发<br>JVM<br>TCP</p>
+<p>说很重要，台上一分钟台下十年功</p>
+
       
     </div>
     
@@ -173,6 +175,66 @@
       
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cc/">cc</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-java-concurrent-JMM" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/04/11/java-concurrent-JMM/" class="article-date">
+  	<time datetime="2015-04-11T07:13:16.000Z" itemprop="datePublished">2015-04-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/11/java-concurrent-JMM/">java-concurrent-JMM</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="final"><a href="#final" class="headerlink" title="final"></a>final</h2><ul>
+<li>构造函数中对象的final字段赋值，与随后将该对象引用赋值，两者不能重排序</li>
+<li>读取某个对象，与读取对象final的字段，两者不能重排序</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li></ul>
 	</div>
 
       
@@ -806,96 +868,9 @@
 
 
   
-    <article id="post-io-tcp-points" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/02/06/io-tcp-points/" class="article-date">
-  	<time datetime="2015-02-06T11:24:09.000Z" itemprop="datePublished">2015-02-06</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/06/io-tcp-points/">TCP的那些事</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u5F00_u59CB"><a href="#u5F00_u59CB" class="headerlink" title="开始"></a>开始</h2><p>这篇文章主要总结一些个人认为TCP中比较重要又容易引起混淆的理论</p>
-<h2 id="u5EF6_u8FDFack"><a href="#u5EF6_u8FDFack" class="headerlink" title="延迟ack"></a>延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
-<p>至于延迟ack的意义，除了上文提到的可以提高ack的传输效率，还可以进行“捎带”操作。</p>
-<p>延迟ack似乎也只是在正常情况下才会使用，那什么情况下接收方不会累计确认而会立即响应ack呢？看一下ack的发送时机:</p>
-<ul>
-<li>首先，延迟的ack，当收到第一个数据包并等待第二个数据包传输时，等待超过50ms则立即发送ack</li>
-<li>其次，累积确认的ack，第一次收到的数据包未响应ack，第二次收到数据包时则立即发送ack</li>
-<li>发现有失序到达的数据包时，立即响应冗余ack</li>
-<li>发现有比失序到达的数据包序号更小的数据包时，立即响应ack</li>
-</ul>
-<h2 id="u62E5_u585E_u63A7_u5236"><a href="#u62E5_u585E_u63A7_u5236" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><ul>
-<li>CongWin：拥塞窗口大小，已经发送但还未收到ack的数据包数量；</li>
-<li>慢启动：当tcp开始传输时CongWin大小为1，每收到一个ack后CongWin++,即每过一个RTT之后CongWin = CongWin*2；</li>
-<li>拥塞避免：当速率到达某个值(ssthresh：slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTT之后CongWin++；</li>
-<li>超时丢包：当发生超时丢包时，TCP认为情况太糟糕，反应很强烈，CongWin = 1，ssthresh = CongWin/2，重新进入慢启动过程。</li>
-<li>收到3个冗余ack丢包：当发送方收到3个冗余ack时，CongWin = CongWin/2，ssthresh = CongWin，进入拥塞避免；</li>
-<li>快速恢复：当发生超时丢包后又收到了3个冗余ack，那么TCP认为网络情况还没有之认为的那么严重，随机进入拥塞避免，即CongWin恢复为丢包时的一半，ssthresh恢复为丢包时的CongWin值。</li>
-</ul>
-<h2 id="u72B6_u6001_u6C47_u603B"><a href="#u72B6_u6001_u6C47_u603B" class="headerlink" title="状态汇总"></a>状态汇总</h2><ul>
-<li>closed</li>
-<li>listen</li>
-<li>syn_sent</li>
-<li>syn_rcvd</li>
-<li>established</li>
-<li>close_wait：接收到FIN并响应ack后进入close_wait状态，此状态时如果还有未发送完成的数据则可以继续发送</li>
-<li>last_ack：close_wait状态中发送fin报文之后进入last_ack状态</li>
-<li>fin_wait_1：主动发送fin报文之后进入fin_wait_1状态，等待ack返回</li>
-<li>fin_wait_2：收到ack后等待对方发送fin报文，此时可能还有数据包到达</li>
-<li>time_wait：收到fin报文并响应ack后进入time_wait状态，time_wait状态将持续MSL ×　2的时间，主要出于两个原因:1.尽力确保最后的ack送达，如果ack超时，对方会重发fin，要等待fin以及ack两个报文的线路存在时间，所以需要*2；2.确保本链接关闭时不会影响后面新建立的连接，如果没有time_wait状态而直接关闭并且马上在同样的端口号又重建了一个连接，而最后发送的ack又超时，对方重发fin，这又将新建立的连接关闭了。</li>
-<li>closing：此状态相对比较特殊，主动发送fin后，没有收到ack却收到了fin（双方同时关闭连接），此时响应ack并进入closing状态，随后当收到ack时进入time_wait状态</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 </div>
