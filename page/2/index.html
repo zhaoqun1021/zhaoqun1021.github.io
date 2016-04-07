@@ -138,94 +138,6 @@
 
       <div class="body-wrap">
   
-    <article id="post-io-tcp-points" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/02/06/io-tcp-points/" class="article-date">
-  	<time datetime="2015-02-06T11:24:09.000Z" itemprop="datePublished">2015-02-06</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/06/io-tcp-points/">TCP的那些事</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="u5F00_u59CB"><a href="#u5F00_u59CB" class="headerlink" title="开始"></a>开始</h2><p>这篇文章主要总结一些个人认为TCP中比较重要又容易引起混淆的理论</p>
-<h2 id="u5EF6_u8FDFack"><a href="#u5EF6_u8FDFack" class="headerlink" title="延迟ack"></a>延迟ack</h2><p>因为tcp协议是可靠的协议，接收端需要告诉发送端目前它收到了哪些包以及哪些包需要重传，ack就是用来是用来对tcp数据包的确认。简单来说，接收方每接受一个数据包就应该响应一个ack，但是大多数tcp实现认为这样做没必要，它们的做法是累计确认，而且最多只累积确认两个数据包。也就是说，假设A向B发送了10个数据包，而且数据包都是正常按序到达，B接收数据包过程中只需要间隔响应5个ack就可以了。</p>
-<p>至于延迟ack的意义，除了上文提到的可以提高ack的传输效率，还可以进行“捎带”操作。</p>
-<p>延迟ack似乎也只是在正常情况下才会使用，那什么情况下接收方不会累计确认而会立即响应ack呢？看一下ack的发送时机:</p>
-<ul>
-<li>首先，延迟的ack，当收到第一个数据包并等待第二个数据包传输时，等待超过50ms则立即发送ack</li>
-<li>其次，累积确认的ack，第一次收到的数据包未响应ack，第二次收到数据包时则立即发送ack</li>
-<li>发现有失序到达的数据包时，立即响应冗余ack</li>
-<li>发现有比失序到达的数据包序号更小的数据包时，立即响应ack</li>
-</ul>
-<h2 id="u62E5_u585E_u63A7_u5236"><a href="#u62E5_u585E_u63A7_u5236" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><ul>
-<li>CongWin：拥塞窗口大小，已经发送但还未收到ack的数据包数量；</li>
-<li>慢启动：当tcp开始传输时CongWin大小为1，每收到一个ack后CongWin++,即每过一个RTT之后CongWin = CongWin*2；</li>
-<li>拥塞避免：当速率到达某个值(ssthresh：slow start threshold：一般为64K)时进入拥塞避免，每收到一个ack后CongWin = CongWin+1/CongWin，即每过一个RTT之后CongWin++；</li>
-<li>超时丢包：当发生超时丢包时，TCP认为情况太糟糕，反应很强烈，CongWin = 1，ssthresh = CongWin/2，重新进入慢启动过程。</li>
-<li>收到3个冗余ack丢包：当发送方收到3个冗余ack时，CongWin = CongWin/2，ssthresh = CongWin，进入拥塞避免；</li>
-<li>快速恢复：当发生超时丢包后又收到了3个冗余ack，那么TCP认为网络情况还没有之认为的那么严重，随机进入拥塞避免，即CongWin恢复为丢包时的一半，ssthresh恢复为丢包时的CongWin值。</li>
-</ul>
-<h2 id="u72B6_u6001_u6C47_u603B"><a href="#u72B6_u6001_u6C47_u603B" class="headerlink" title="状态汇总"></a>状态汇总</h2><ul>
-<li>closed</li>
-<li>listen</li>
-<li>syn_sent</li>
-<li>syn_rcvd</li>
-<li>established</li>
-<li>close_wait：接收到FIN并响应ack后进入close_wait状态，此状态时如果还有未发送完成的数据则可以继续发送</li>
-<li>last_ack：close_wait状态中发送fin报文之后进入last_ack状态</li>
-<li>fin_wait_1：主动发送fin报文之后进入fin_wait_1状态，等待ack返回</li>
-<li>fin_wait_2：收到ack后等待对方发送fin报文，此时可能还有数据包到达</li>
-<li>time_wait：收到fin报文并响应ack后进入time_wait状态，time_wait状态将持续MSL ×　2的时间，主要出于两个原因:1.尽力确保最后的ack送达，如果ack超时，对方会重发fin，要等待fin以及ack两个报文的线路存在时间，所以需要*2；2.确保本链接关闭时不会影响后面新建立的连接，如果没有time_wait状态而直接关闭并且马上在同样的端口号又重建了一个连接，而最后发送的ack又超时，对方重发fin，这又将新建立的连接关闭了。</li>
-<li>closing：此状态相对比较特殊，主动发送fin后，没有收到ack却收到了fin（双方同时关闭连接），此时响应ack并进入closing状态，随后当收到ack时进入time_wait状态</li>
-</ul>
-<p>TCP状态<br><img src="http://ww1.sinaimg.cn/mw690/414d7865gw1f1yveljumkj20f60lcq43.jpg" alt="TCP状态"></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/io/">io</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-java-concurrent-aqs" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -453,7 +365,7 @@
 <p>运行时包的存在同样是出于安全考虑。</p>
 <h2 id="u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668"><a href="#u81EA_u5B9A_u4E49_u52A0_u8F7D_u5668" class="headerlink" title="自定义加载器"></a>自定义加载器</h2><p>如何实现自定义加载器？</p>
 <p>调用抽象类ClassLoad的loadClass方法时会调用parent的loadClass方法，如果parent为空则调用根加载器的loadClass，如果父加载器方法抛出异常则调用自己的findClass方法，<br>该方法在ClassLoad类中默认抛出ClassNotDeError,用户需要自己实现相关find class逻辑。ClassLoad中的defineClass方法可以通过class文件的二进制数据初始化为Class对象。</p>
-<h2 id="JavaEE_u7684_u7C7B_u52A0_u8F7D"><a href="#JavaEE_u7684_u7C7B_u52A0_u8F7D" class="headerlink" title="JavaEE的类加载"></a>JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。JavaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。<br>Tomcat有自定义的类加载器，父加载器为根加载器。</p>
+<h2 id="JavaEE_u7684_u7C7B_u52A0_u8F7D"><a href="#JavaEE_u7684_u7C7B_u52A0_u8F7D" class="headerlink" title="JavaEE的类加载"></a>JavaEE的类加载</h2><p>JavaEE的类加载器默认行为是首先在Bootstrap中加载，如果加载不到则先从Webapp下面加载。JavaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。<br>Tomcat有自定义的类加载器，父加载器为根加载器，加载时会首先加载应用下的lib，然后再加载tomcat下的lib。</p>
 <p>JavaEE的 委派模型：<br><img src="http://ww1.sinaimg.cn/mw690/414d7865jw1ewsl2mknw2j20f9084mxb.jpg" alt="JavaEE的类加载"></p>
 <h2 id="u7C7B_u52A0_u8F7D_u8FC7_u7A0B"><a href="#u7C7B_u52A0_u8F7D_u8FC7_u7A0B" class="headerlink" title="类加载过程"></a>类加载过程</h2><p>加载、连接、初始化：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmbxmee0j20lj088q3w.jpg" alt="类加载过程"></p>
 <p>连接阶段：<br><img src="http://ww3.sinaimg.cn/mw690/414d7865jw1ewsmaslm26j20lf086wff.jpg" alt="类加载过程"></p>
@@ -826,9 +738,70 @@
 
 
   
+    <article id="post-cc-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/11/cc-hello-world/" class="article-date">
+  	<time datetime="2015-01-11T13:41:58.000Z" itemprop="datePublished">2015-01-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/11/cc-hello-world/">你好，色彩</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Hello_World"><a href="#Hello_World" class="headerlink" title="Hello World"></a>Hello World</h2><p>新博客：GitHub + Hexo</p>
+<h2 id="u5B89_u88C5Node-js_u3001Git"><a href="#u5B89_u88C5Node-js_u3001Git" class="headerlink" title="安装Node.js、Git"></a>安装Node.js、Git</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Node.js</span><br><span class="line">&amp;</span><br><span class="line">Git</span><br></pre></td></tr></table></figure>
+<h2 id="u914D_u7F6EGtiHub"><a href="#u914D_u7F6EGtiHub" class="headerlink" title="配置GtiHub"></a>配置GtiHub</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">生成密钥：ssh-keygen -t rsa -C <span class="string">"911@zhaoqun911.cn"</span></span><br><span class="line"></span><br><span class="line">将配置到GitHub： Account Settings—-&gt;SSH Public keys —-&gt; add another public keys（C:\Users\xx\.ssh\id_rsa.pub）</span><br><span class="line"></span><br><span class="line">测试：ssh -T git@github.com</span><br><span class="line"></span><br><span class="line">设置用户信息：git config --global user.name <span class="string">"xx"</span>； git config --global user.email  <span class="string">"xx"</span></span><br></pre></td></tr></table></figure>
+<h2 id="u5B89_u88C5_u3001_u914D_u7F6Ehexo"><a href="#u5B89_u88C5_u3001_u914D_u7F6Ehexo" class="headerlink" title="安装、配置hexo"></a>安装、配置hexo</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line"></span><br><span class="line">hexo init</span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> theme</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:litten/hexo-theme-yilia yilia</span><br><span class="line"></span><br><span class="line">修改配置文件:theme:yilia</span><br><span class="line"></span><br><span class="line">hexo g</span><br><span class="line"></span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<h2 id="u53D1_u5E03"><a href="#u53D1_u5E03" class="headerlink" title="发布"></a>发布</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> public</span><br><span class="line"></span><br><span class="line">git init</span><br><span class="line"></span><br><span class="line">git remote add blog git@github.com:zhaoqun1021/zhaoqun1021.github.io</span><br><span class="line"></span><br><span class="line">将所有文件备份</span><br><span class="line"></span><br><span class="line">git pull blog master</span><br><span class="line"></span><br><span class="line">将备份的文件再覆盖回来</span><br><span class="line"></span><br><span class="line">git add *</span><br><span class="line"></span><br><span class="line">git commit -m <span class="string">'cc'</span></span><br><span class="line"></span><br><span class="line">git push blog master</span><br></pre></td></tr></table></figure>
+<h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">_config.yml:</span><br><span class="line">	archive_dir：归档位置？ </span><br><span class="line">	category_dir:分类URL名称？</span><br><span class="line"></span><br><span class="line">主题：</span><br><span class="line">	hexo-theme-yilia</span><br><span class="line"></span><br><span class="line">编辑器:</span><br><span class="line">    sublime + MarkdownEditing + MarkdownPreview</span><br><span class="line">    http://www.jianshu.com/p/<span class="number">378338</span>f10263</span><br><span class="line">插件：</span><br><span class="line">    package install + imesurpport</span><br><span class="line">    http://qianduanblog.com/post/sublime-text-<span class="number">3</span>-plugin-imesupport.html</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/cc/">cc</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
     </nav>
   
 </div>
